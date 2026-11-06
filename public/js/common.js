@@ -112,9 +112,11 @@ function initials(name) {
 }
 function socialLinks(person) {
   const row = el('div', 'icon-row');
+  const phones = person.phones?.length ? person.phones : (person.phone ? [person.phone] : []);
+  const emails = person.emails?.length ? person.emails : (person.email ? [person.email] : []);
   const items = [
-    [person.email ? `mailto:${person.email}` : '', 'fa-solid fa-envelope', 'Email'],
-    [person.phone ? `tel:${person.phone.replace(/\s/g, '')}` : '', 'fa-solid fa-phone', 'Phone'],
+    ...emails.map((email) => [`mailto:${email}`, 'fa-solid fa-envelope', 'Email']),
+    ...phones.map((phone) => [`tel:${String(phone).replace(/\s/g, '')}`, 'fa-solid fa-phone', 'Phone']),
     [person.instagram, 'fa-brands fa-instagram', 'Instagram'],
     [person.facebook, 'fa-brands fa-facebook-f', 'Facebook'],
     [person.tiktok, 'fa-brands fa-tiktok', 'TikTok']

@@ -202,7 +202,9 @@ function shapeDoctor(row, gallery) {
     experience: row.experience || {},
     certifications: row.certifications || {},
     email: row.email || '',
+    emails: Array.isArray(row.emails) && row.emails.length ? row.emails : [row.email].filter(Boolean),
     phone: row.phone || '',
+    phones: Array.isArray(row.phones) && row.phones.length ? row.phones : [row.phone].filter(Boolean),
     instagram: row.instagram || '',
     facebook: row.facebook || '',
     tiktok: row.tiktok || '',
@@ -302,7 +304,13 @@ function present(bundle, { includeHidden = false } = {}) {
           address: bundle.contact.address || {},
           phone: bundle.contact.phone || '',
           phoneSecondary: bundle.contact.phone_secondary || '',
+          phones: Array.isArray(bundle.contact.phones) && bundle.contact.phones.length
+            ? bundle.contact.phones
+            : [bundle.contact.phone, bundle.contact.phone_secondary].filter(Boolean),
           email: bundle.contact.email || '',
+          emails: Array.isArray(bundle.contact.emails) && bundle.contact.emails.length
+            ? bundle.contact.emails
+            : [bundle.contact.email].filter(Boolean),
           whatsapp: bundle.contact.whatsapp || '',
           hours: bundle.contact.hours || [],
           mapQuery: bundle.contact.map_query || ''
@@ -360,6 +368,14 @@ function doctorPayload(body, fallbackSlug) {
     throw error;
   }
   const theme = body.theme === 'aesthetic' || body.theme === 'dent' ? body.theme : clinics[0];
+  const phones = (Array.isArray(body.phones) ? body.phones : [body.phone])
+    .map((value) => String(value || '').trim().slice(0, 40))
+    .filter(Boolean)
+    .slice(0, 8);
+  const emails = (Array.isArray(body.emails) ? body.emails : [body.email])
+    .map((value) => String(value || '').trim().slice(0, 160))
+    .filter(Boolean)
+    .slice(0, 8);
   const services = Array.isArray(body.services)
     ? body.services.slice(0, 24).map((item) => asObject(item)).filter((item) => item.sq || item.en || item.de || item.fr)
     : [];
@@ -371,8 +387,10 @@ function doctorPayload(body, fallbackSlug) {
     education: asObject(body.education),
     experience: asObject(body.experience),
     certifications: asObject(body.certifications),
-    email: String(body.email || '').trim().slice(0, 160),
-    phone: String(body.phone || '').trim().slice(0, 40),
+    email: emails[0] || '',
+    emails,
+    phone: phones[0] || '',
+    phones,
     instagram: String(body.instagram || '').trim().slice(0, 300),
     facebook: String(body.facebook || '').trim().slice(0, 300),
     tiktok: String(body.tiktok || '').trim().slice(0, 300),
@@ -717,11 +735,21 @@ app.put('/api/admin/contact', requireAdmin, async (req, res) => {
     days: asObject(row.days),
     time: asObject(typeof row.time === 'string' ? { sq: row.time, en: row.time, de: row.time, fr: row.time } : row.time)
   })) : [];
+  const phones = (Array.isArray(req.body.phones) ? req.body.phones : [req.body.phone, req.body.phoneSecondary])
+    .map((value) => String(value || '').trim().slice(0, 40))
+    .filter(Boolean)
+    .slice(0, 8);
+  const emails = (Array.isArray(req.body.emails) ? req.body.emails : [req.body.email])
+    .map((value) => String(value || '').trim().slice(0, 160))
+    .filter(Boolean)
+    .slice(0, 8);
   const { error } = await req.sb.from('contact_info').update({
     address: asObject(req.body.address),
-    phone: String(req.body.phone || '').slice(0, 40),
-    phone_secondary: String(req.body.phoneSecondary || '').slice(0, 40),
-    email: String(req.body.email || '').slice(0, 160),
+    phone: phones[0] || '',
+    phone_secondary: phones[1] || '',
+    phones,
+    email: emails[0] || '',
+    emails,
     whatsapp: String(req.body.whatsapp || '').slice(0, 40),
     hours,
     map_query: String(req.body.mapQuery || '').slice(0, 180)
@@ -1056,8 +1084,12 @@ app.delete('/api/admin/appointments/:id', requireAdmin, async (req, res) => {
 app.post('/api/admin/password', requireAdmin, async (req, res) => {
   const password = String(req.body.password || '');
   if (password.length < 8) return res.status(400).json({ error: 'Fjalëkalimi duhet të ketë të paktën 8 shenja.' });
-  const { error } = await req.sb.auth.updateUser({ password });
+  const { data, error } = await req.sb.auth.updateUser({ password });
   if (error) return res.status(400).json({ error: error.message });
+  if (data?.session) {
+    req.session.access_token = data.session.access_token;
+    req.session.refresh_token = data.session.refresh_token;
+  }
   res.json({ ok: true });
 });
 

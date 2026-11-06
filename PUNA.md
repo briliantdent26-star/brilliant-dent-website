@@ -50,4 +50,4 @@
 - Në sliderin e stomatologjisë, me radhë: fasada, kabineti i trajtimit, hapësira e pritjes. Fotot e mëparshme të atij slideri u zëvendësuan.
 - Në telefon fotoja zë gjerësinë e ekranit dhe butonat qëndrojnë poshtë tekstit, pa u mbuluar nga WhatsApp. Në ekran të gjerë fotoja dhe shiriti hyjnë në një ekran.
 - Fotoja e dytë është salla e mbledhjes. Të tria fotot mbushin kutinë, pa vija të zeza anash dhe pa fletë mbi foto.
-- Në panel: Hero Slider për secilën klinikë (ngarkim, rend, tekst opsional, fshehje, zëvendësim, fshirje). Fotoja e stafit ka parapamje, prerje dhe ngarkim. Galeria merr foto dhe MP4, me përshkrim, rend dhe fshirje.
+- Te Stafi, secili mjek ka telefonat dhe email-et e veta, me mundësi shtimi. Te Fjalëkalimi, pronari e ndërron fjalëkalimin e panelit.

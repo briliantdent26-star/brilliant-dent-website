@@ -29,16 +29,18 @@ function render() {
   document.querySelector('#icons').replaceChildren(socialLinks(doctor));
   const contact = document.querySelector('#direct');
   contact.replaceChildren();
-  if (doctor.phone) {
-    const phone = el('a', 'btn btn-navy', doctor.phone);
-    phone.href = `tel:${doctor.phone.replace(/\s/g, '')}`;
+  const phones = doctor.phones?.length ? doctor.phones : (doctor.phone ? [doctor.phone] : []);
+  const emails = doctor.emails?.length ? doctor.emails : (doctor.email ? [doctor.email] : []);
+  phones.forEach((value) => {
+    const phone = el('a', 'btn btn-navy', value);
+    phone.href = `tel:${String(value).replace(/\s/g, '')}`;
     contact.appendChild(phone);
-  }
-  if (doctor.email) {
-    const email = el('a', 'btn btn-line', doctor.email);
-    email.href = `mailto:${doctor.email}`;
+  });
+  emails.forEach((value) => {
+    const email = el('a', 'btn btn-line', value);
+    email.href = `mailto:${value}`;
     contact.appendChild(email);
-  }
+  });
   const story = document.querySelector('#story');
   story.replaceChildren();
   [section(t('bio'), tx(doctor.bio)), section(t('education'), tx(doctor.education)), section(t('experience'), tx(doctor.experience)), section(t('certs'), tx(doctor.certifications))]

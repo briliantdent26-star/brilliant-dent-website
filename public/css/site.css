@@ -428,7 +428,9 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
 .main-panel { padding: 1.1rem 1.2rem 1.6rem; }
 .staff-row, .edit-card { border: 1px solid #eee; border-radius: 14px; padding: 0.8rem; margin: 0.6rem 0; display: grid; gap: 0.55rem; }
 .staff-row { grid-template-columns: 64px 1fr auto; align-items: center; }
-.staff-row img, .ph { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #f0ebe3; }
+.contact-list { display: grid; gap: 0.35rem; margin: 0.8rem 0; }
+.contact-row { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; align-items: center; }
+#phones a, #emails a { color: inherit; }
 .photo-preview, .crop-frame { width: 180px; height: 225px; border-radius: 14px; overflow: hidden; background: #ece6dc; }
 .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
 .photo-preview .monogram { height: 100%; }

@@ -322,11 +322,18 @@ function render() {
 
   const contact = content.contact;
   document.querySelector('#address').textContent = tx(contact.address);
-  document.querySelector('#email').textContent = contact.email;
-  document.querySelector('#email').href = `mailto:${contact.email}`;
+  const emails = document.querySelector('#emails');
+  emails.replaceChildren();
+  const emailList = contact.emails?.length ? contact.emails : [contact.email].filter(Boolean);
+  emailList.forEach((email) => {
+    const link = el('a', '', email);
+    link.href = `mailto:${email}`;
+    emails.append(link, document.createTextNode(' · '));
+  });
   const phones = document.querySelector('#phones');
   phones.replaceChildren();
-  [contact.phone, contact.phoneSecondary].filter(Boolean).forEach((phone) => {
+  const phoneList = contact.phones?.length ? contact.phones : [contact.phone, contact.phoneSecondary].filter(Boolean);
+  phoneList.forEach((phone) => {
     const link = el('a', '', phone);
     link.href = `tel:${phone.replace(/\s/g, '')}`;
     phones.append(link, document.createTextNode(' · '));

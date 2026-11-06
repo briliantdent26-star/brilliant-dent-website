@@ -74,7 +74,7 @@ function drawStaff() {
 function blankDoctor() {
   return {
     fullName: '', slug: '', title: {}, bio: {}, education: {}, experience: {}, certifications: {},
-    email: '', phone: '', instagram: '', facebook: '', tiktok: '',
+    email: '', emails: [], phone: '', phones: [], instagram: '', facebook: '', tiktok: '',
     clinics: ['dent'], theme: 'dent', services: [], visible: true, gallery: []
   };
 }
@@ -98,9 +98,12 @@ function editor(doctor) {
   addLang('Arsimimi', 'education');
   addLang('Përvoja', 'experience');
   addLang('Certifikimet', 'certifications');
-  ['email', 'phone', 'instagram', 'facebook', 'tiktok'].forEach((key) => {
+  const phoneRows = contactRows('Telefonat', doctor.phones?.length ? doctor.phones : [doctor.phone].filter(Boolean), 'Telefoni', 'Shto telefon');
+  const emailRows = contactRows('Email-et', doctor.emails?.length ? doctor.emails : [doctor.email].filter(Boolean), 'Email', 'Shto email');
+  box.append(phoneRows.box, emailRows.box);
+  [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['tiktok', 'TikTok']].forEach(([key, label]) => {
     const input = document.createElement('input');
-    input.placeholder = key;
+    input.placeholder = label;
     input.value = doctor[key] || '';
     input.addEventListener('input', () => { doctor[key] = input.value; });
     box.appendChild(input);
@@ -148,6 +151,12 @@ function editor(doctor) {
   box.addEventListener('submit', async (event) => {
     event.preventDefault();
     doctor.fullName = name.value;
+    const phoneList = phoneRows.read();
+    const emailList = emailRows.read();
+    doctor.phones = phoneList;
+    doctor.phone = phoneList[0] || '';
+    doctor.emails = emailList;
+    doctor.email = emailList[0] || '';
     const body = { ...doctor };
     try {
       if (doctor.id) await api(`/api/admin/doctors/${doctor.id}`, { method: 'PUT', body });
@@ -615,20 +624,49 @@ function drawContact() {
   form.className = 'edit-card';
   form.append(Object.assign(document.createElement('h2'), { textContent: 'Kontakti' }));
   form.append(langs(contact.address, (lang, value) => { contact.address = { ...contact.address, [lang]: value }; }));
-  const phone = Object.assign(document.createElement('input'), { value: contact.phone || '', placeholder: 'Telefoni' });
-  const phone2 = Object.assign(document.createElement('input'), { value: contact.phoneSecondary || '', placeholder: 'Telefoni 2' });
-  const email = Object.assign(document.createElement('input'), { value: contact.email || '', placeholder: 'Email' });
+  const phones = contactRows('Telefonat', contact.phones?.length ? contact.phones : [contact.phone, contact.phoneSecondary].filter(Boolean), 'Telefoni', 'Shto telefon');
+  const emails = contactRows('Email-et', contact.emails?.length ? contact.emails : [contact.email].filter(Boolean), 'Email', 'Shto email');
   const whatsapp = Object.assign(document.createElement('input'), { value: contact.whatsapp || '', placeholder: 'WhatsApp, p.sh. +383 44 654 129' });
-  form.append(phone, phone2, email, whatsapp);
+  form.append(phones.box, emails.box, whatsapp);
   const save = document.createElement('button');
   save.className = 'btn btn-navy'; save.textContent = 'Ruaj'; save.type = 'submit';
   form.append(save);
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    await api('/api/admin/contact', { method: 'PUT', body: { ...contact, phone: phone.value, phoneSecondary: phone2.value, email: email.value, whatsapp: whatsapp.value } });
+    const phoneList = phones.read();
+    const emailList = emails.read();
+    await api('/api/admin/contact', {
+      method: 'PUT',
+      body: {
+        ...contact,
+        phones: phoneList,
+        phone: phoneList[0] || '',
+        phoneSecondary: phoneList[1] || '',
+        emails: emailList,
+        email: emailList[0] || '',
+        whatsapp: whatsapp.value
+      }
+    });
     alert('U ruajt.');
+    await refresh();
   });
   root.replaceChildren(form);
+}
+function contactRows(title, values, placeholder, addLabel) {
+  const box = document.createElement('div');
+  box.className = 'contact-list';
+  box.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: title }));
+  const rows = document.createElement('div');
+  function add(value) {
+    const row = document.createElement('div');
+    row.className = 'contact-row';
+    const input = Object.assign(document.createElement('input'), { value: value || '', placeholder });
+    row.append(input, button('Hiq', () => row.remove()));
+    rows.appendChild(row);
+  }
+  (values.length ? values : ['']).forEach(add);
+  box.append(rows, button(addLabel, () => add('')));
+  return { box, read: () => [...rows.querySelectorAll('input')].map((input) => input.value.trim()).filter(Boolean) };
 }
 function drawAppointments() {
   const labels = { new: 'e re', confirmed: 'e konfirmuar', cancelled: 'e anuluar', contacted: 'e kontaktuar', closed: 'e mbyllur' };
@@ -757,14 +795,32 @@ function drawTestimonials() {
 function drawPassword() {
   const form = document.createElement('form');
   form.className = 'edit-card';
-  const input = Object.assign(document.createElement('input'), { type: 'password', placeholder: 'Fjalëkalimi i ri', required: true, minLength: 8 });
+  const next = Object.assign(document.createElement('input'), { type: 'password', placeholder: 'Fjalëkalimi i ri', required: true, minLength: 8, autocomplete: 'new-password' });
+  const again = Object.assign(document.createElement('input'), { type: 'password', placeholder: 'Përsëriteni fjalëkalimin', required: true, minLength: 8, autocomplete: 'new-password' });
+  const note = document.createElement('p');
+  note.className = 'error';
   const save = document.createElement('button');
-  save.className = 'btn btn-navy'; save.textContent = 'Ndrysho'; save.type = 'submit';
-  form.append(Object.assign(document.createElement('h2'), { textContent: 'Fjalëkalimi' }), input, save);
+  save.className = 'btn btn-navy'; save.textContent = 'Ndrysho fjalëkalimin'; save.type = 'submit';
+  form.append(
+    Object.assign(document.createElement('h2'), { textContent: 'Fjalëkalimi i pronarit' }),
+    Object.assign(document.createElement('p'), { className: 'muted', textContent: 'Të paktën 8 shenja. Me këtë hyni në panel.' }),
+    next, again, note, save
+  );
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    await api('/api/admin/password', { method: 'POST', body: { password: input.value } });
-    alert('Fjalëkalimi u ndryshua.');
+    note.textContent = '';
+    if (next.value !== again.value) {
+      note.textContent = 'Fjalëkalimet nuk përputhen.';
+      return;
+    }
+    try {
+      await api('/api/admin/password', { method: 'POST', body: { password: next.value } });
+      note.textContent = '';
+      alert('Fjalëkalimi u ndryshua. Herën tjetër hyni me të riun.');
+      form.reset();
+    } catch (err) {
+      note.textContent = err.message;
+    }
   });
   panelEl().replaceChildren(form);
 }
