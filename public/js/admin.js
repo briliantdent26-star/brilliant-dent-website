@@ -400,84 +400,7 @@ function drawClinic(slug) {
     await api('/api/admin/services', { method: 'POST', body: { clinic: slug, title: { sq: 'Shërbim i ri' }, description: { sq: '' }, sortOrder: clinic.services.length } });
     await refresh();
   }));
-  const upload = document.createElement('form');
-  upload.className = 'edit-card';
-  upload.innerHTML = '<p class="muted">Galeria — foto ose video MP4</p>';
-  const file = document.createElement('input');
-  file.type = 'file'; file.name = 'file'; file.accept = 'image/*,video/mp4,video/webm'; file.multiple = true; file.required = true;
-  const caption = document.createElement('input');
-  caption.placeholder = 'Përshkrimi, opsional';
-  const go = document.createElement('button');
-  go.className = 'tiny'; go.type = 'submit'; go.textContent = 'Ngarko';
-  upload.append(file, caption, go);
-  upload.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const files = [...file.files];
-    let order = galleryItems.length;
-    for (const one of files) {
-      const body = new FormData();
-      body.append('file', one);
-      body.append('clinic', slug);
-      body.append('placement', 'gallery');
-      body.append('sortOrder', String(order));
-      body.append('caption', JSON.stringify({ sq: caption.value, en: caption.value, de: caption.value, fr: caption.value }));
-      await api('/api/admin/gallery', { method: 'POST', body });
-      order += 1;
-    }
-    await refresh();
-  });
-  root.appendChild(upload);
-  const embed = document.createElement('form');
-  embed.className = 'edit-card';
-  const url = document.createElement('input');
-  url.placeholder = 'https://www.tiktok.com/@.../video/...';
-  embed.append(url, button('Shto videon', async () => {
-    const body = new FormData();
-    body.append('clinic', slug);
-    body.append('placement', 'gallery');
-    body.append('url', url.value);
-    await api('/api/admin/gallery', { method: 'POST', body });
-    await refresh();
-  }));
-  root.appendChild(embed);
-  const galleryItems = clinic.gallery.filter((item) => item.placement === 'gallery');
-  galleryItems.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'edit-card';
-    if (item.mediaType === 'video') {
-      const video = document.createElement('video');
-      video.src = item.url;
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.className = 'admin-thumb';
-      card.appendChild(video);
-    } else if (item.mediaType === 'image') {
-      const thumb = document.createElement('img');
-      thumb.src = item.url;
-      thumb.alt = '';
-      thumb.className = 'admin-thumb';
-      card.appendChild(thumb);
-    }
-    card.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: `${item.mediaType} · galeria` }));
-    card.append(langs(item.caption || {}, (lang, value) => { item.caption = { ...(item.caption || {}), [lang]: value }; }, false));
-    const actions = document.createElement('div');
-    actions.className = 'row-actions';
-    actions.append(
-      button('Ruaj përshkrimin', async () => {
-        await api(`/api/admin/gallery/${item.id}`, { method: 'PUT', body: { caption: item.caption } });
-        alert('U ruajt.');
-      }),
-      button('↑', () => moveGallery(galleryItems, index, -1)),
-      button('↓', () => moveGallery(galleryItems, index, 1)),
-      button('Fshi', async () => {
-        await api(`/api/admin/gallery/${item.id}`, { method: 'DELETE' });
-        await refresh();
-      })
-    );
-    card.appendChild(actions);
-    root.appendChild(card);
-  });
+  root.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: 'Fotot dhe videot ndërrohen te Galeria: slideri në mes dhe galeria.' }));
   const pair = document.createElement('form');
   pair.className = 'edit-card';
   pair.innerHTML = '<p class="muted">Para & pas i klinikës</p>';
@@ -616,6 +539,101 @@ function drawHero() {
     });
     root.appendChild(block);
   });
+}
+function drawGallery() {
+  const root = panelEl();
+  root.replaceChildren(Object.assign(document.createElement('h2'), { textContent: 'Galeria' }));
+  const note = document.createElement('p');
+  note.className = 'muted';
+  note.textContent = 'Ngarkoni foto ose video MP4. «Zëvendëso» e ndërron foton. Slideri në mes është mes shërbimeve dhe stafit.';
+  root.appendChild(note);
+  ['dent', 'aesthetic'].forEach((slug) => {
+    const block = document.createElement('section');
+    block.className = 'edit-card';
+    block.append(Object.assign(document.createElement('h3'), { textContent: slug === 'dent' ? 'Stomatologjia' : 'Estetika' }));
+    block.appendChild(mediaGroup(slug, 'middle', 'Slideri në mes'));
+    block.appendChild(mediaGroup(slug, 'gallery', 'Galeria'));
+    root.appendChild(block);
+  });
+}
+function mediaGroup(slug, placement, title) {
+  const clinic = data[slug];
+  const items = clinic.gallery.filter((item) => item.placement === placement);
+  const box = document.createElement('div');
+  box.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: title }));
+  const upload = document.createElement('form');
+  const file = document.createElement('input');
+  file.type = 'file';
+  file.accept = 'image/*,video/mp4,video/webm';
+  file.multiple = true;
+  const overlay = document.createElement('input');
+  overlay.placeholder = 'Përshkrimi, opsional';
+  upload.append(file, overlay, button('Ngarko foto ose video', async () => {
+    if (!file.files.length) return;
+    let order = items.reduce((max, item) => Math.max(max, item.sortOrder || 0), -1) + 1;
+    for (const one of file.files) {
+      const body = new FormData();
+      body.append('file', one);
+      body.append('clinic', slug);
+      body.append('placement', placement);
+      body.append('sortOrder', String(order));
+      body.append('caption', JSON.stringify({ sq: overlay.value, en: overlay.value, de: overlay.value, fr: overlay.value }));
+      await api('/api/admin/gallery', { method: 'POST', body });
+      order += 1;
+    }
+    await refresh();
+  }));
+  box.appendChild(upload);
+  items.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'hero-admin';
+    if (item.mediaType === 'video') {
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.muted = true;
+      video.controls = true;
+      video.className = 'admin-thumb';
+      card.appendChild(video);
+    } else if (item.mediaType === 'image') {
+      const thumb = document.createElement('img');
+      thumb.src = item.url;
+      thumb.alt = '';
+      thumb.className = 'admin-thumb';
+      card.appendChild(thumb);
+    } else card.append(Object.assign(document.createElement('p'), { textContent: item.url }));
+    card.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: item.mediaType === 'video' ? 'Video' : 'Foto' }));
+    card.append(langs(item.caption || {}, (lang, value) => { item.caption = { ...(item.caption || {}), [lang]: value }; }, false));
+    const replace = document.createElement('input');
+    replace.type = 'file';
+    replace.accept = 'image/*,video/mp4,video/webm';
+    replace.hidden = true;
+    replace.addEventListener('change', async () => {
+      if (!replace.files[0]) return;
+      const body = new FormData();
+      body.append('file', replace.files[0]);
+      await api(`/api/admin/gallery/${item.id}/file`, { method: 'POST', body });
+      await refresh();
+    });
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+    actions.append(
+      button('Ruaj përshkrimin', async () => {
+        await api(`/api/admin/gallery/${item.id}`, { method: 'PUT', body: { caption: item.caption } });
+        alert('U ruajt.');
+      }),
+      button('↑', () => moveGallery(items, index, -1)),
+      button('↓', () => moveGallery(items, index, 1)),
+      button('Zëvendëso', () => replace.click()),
+      button('Fshi', async () => {
+        if (!confirm('Të fshihet kjo?')) return;
+        await api(`/api/admin/gallery/${item.id}`, { method: 'DELETE' });
+        await refresh();
+      })
+    );
+    card.append(replace, actions);
+    box.appendChild(card);
+  });
+  return box;
 }
 function drawContact() {
   const contact = data.contact;
@@ -827,6 +845,7 @@ function drawPassword() {
 function draw() {
   if (panel === 'staff') drawStaff();
   else if (panel === 'hero') drawHero();
+  else if (panel === 'gallery') drawGallery();
   else if (panel === 'dent' || panel === 'aesthetic') drawClinic(panel);
   else if (panel === 'contact') drawContact();
   else if (panel === 'appointments') drawAppointments();

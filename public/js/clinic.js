@@ -89,111 +89,104 @@ function roomShow() {
   const section = document.querySelector('#roomShow');
   const frame = document.querySelector('#roomFrame');
   if (!section || !frame) return;
-  if (clinicKey !== 'dent') {
+  const items = (content[clinicKey].gallery || []).filter((item) => item.placement === 'middle' && (item.mediaType === 'image' || item.mediaType === 'video'));
+  if (!items.length) {
     section.hidden = true;
     frame.replaceChildren();
     return;
   }
-  const lang = getLang();
-  const photos = [
-    ['/media/dent/room-1.webp', { sq: 'Kabineti i estetikës', en: 'Aesthetic treatment room', de: 'Ästhetik-Behandlungsraum', fr: 'Salle de soin esthétique' }],
-    ['/media/dent/room-2.webp', { sq: 'Recepsioni', en: 'Reception', de: 'Empfang', fr: 'Réception' }],
-    ['/media/dent/room-3.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
-    ['/media/dent/room-4.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
-    ['/media/dent/room-5.webp', { sq: 'Hyrja e kabinetit', en: 'Treatment room entrance', de: 'Eingang zum Behandlungsraum', fr: 'Entrée du cabinet' }]
-  ];
   section.hidden = false;
-  frame.replaceChildren();
-  let index = 0;
-  const slides = photos.map(([url, caption], itemIndex) => {
-    const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
-    const image = el('img');
-    image.src = url;
-    image.alt = caption[lang] || caption.sq;
-    image.decoding = 'async';
-    image.loading = itemIndex === 0 ? 'eager' : 'lazy';
-    slide.appendChild(image);
-    frame.appendChild(slide);
-    return slide;
-  });
-  const nav = el('div', 'room-nav');
-  const prev = el('button', 'hero-nav');
-  prev.type = 'button';
-  prev.setAttribute('aria-label', 'Fotoja e mëparshme');
-  prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-  const next = el('button', 'hero-nav');
-  next.type = 'button';
-  next.setAttribute('aria-label', 'Fotoja tjetër');
-  next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-  const dots = el('div', 'hero-dots');
-  photos.forEach((_, itemIndex) => {
-    const dot = el('button');
-    dot.type = 'button';
-    dot.setAttribute('aria-label', String(itemIndex + 1));
-    if (itemIndex === 0) dot.classList.add('is-on');
-    dot.addEventListener('click', () => show(itemIndex));
-    dots.appendChild(dot);
-  });
-  nav.append(prev, dots, next);
-  frame.appendChild(nav);
-  function show(nextIndex) {
-    slides[index].classList.remove('is-on');
-    dots.children[index].classList.remove('is-on');
-    index = (nextIndex + slides.length) % slides.length;
-    slides[index].classList.add('is-on');
-    dots.children[index].classList.add('is-on');
-    arm();
-  }
-  function arm() {
-    clearInterval(roomTimer);
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    roomTimer = setInterval(() => show(index + 1), 4200);
-  }
-  prev.onclick = () => show(index - 1);
-  next.onclick = () => show(index + 1);
-  arm();
+  roomTimer = mountMediaSlides(frame, items, 'room');
 }
 
 function aboutPhotos(page) {
   clearInterval(aboutTimer);
   const frame = document.querySelector('#aboutPhotos');
   if (!frame) return;
-  const lang = getLang();
-  const clean = clinicKey === 'dent'
-    ? [
-        ['/media/dent/room-2.webp', { sq: 'Recepsioni', en: 'Reception', de: 'Empfang', fr: 'Réception' }],
-        ['/media/dent/room-3.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
-        ['/media/dent/room-4.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
-        ['/media/dent/room-5.webp', { sq: 'Hyrja e kabinetit', en: 'Treatment room entrance', de: 'Eingang zum Behandlungsraum', fr: 'Entrée du cabinet' }],
-        ['/media/dent/room-1.webp', { sq: 'Kabineti i estetikës', en: 'Aesthetic treatment room', de: 'Ästhetik-Behandlungsraum', fr: 'Salle de soin esthétique' }]
-      ]
-    : page.gallery.filter((item) => item.mediaType === 'image' && item.placement === 'hero').slice(0, 2).map((item) => [item.url, item.caption]);
+  const media = (item) => item.mediaType === 'image' || item.mediaType === 'video';
+  let items = page.gallery.filter((item) => item.placement === 'middle' && media(item));
+  if (!items.length) items = page.gallery.filter((item) => item.placement === 'gallery' && media(item));
+  if (!items.length) items = page.gallery.filter((item) => item.placement === 'hero' && item.mediaType === 'image').slice(0, 2);
+  aboutTimer = mountMediaSlides(frame, items, 'about');
+}
+
+function mountMediaSlides(frame, items, which) {
   frame.replaceChildren();
-  if (!clean.length) return;
+  if (!items.length) return 0;
   let index = 0;
-  const slides = clean.map(([url, caption], itemIndex) => {
+  const slides = items.map((item, itemIndex) => {
     const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
-    const image = el('img');
-    image.src = url;
-    image.alt = (caption && (caption[lang] || caption.sq)) || t('altAbout');
-    image.decoding = 'async';
-    slide.appendChild(image);
+    const note = tx(item.caption);
+    if (item.mediaType === 'video') {
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = itemIndex === 0 ? 'auto' : 'metadata';
+      if (itemIndex === 0) video.autoplay = true;
+      slide.appendChild(video);
+    } else {
+      const image = el('img');
+      image.src = item.url;
+      image.alt = note || t('altGallery');
+      image.decoding = 'async';
+      image.loading = itemIndex === 0 ? 'eager' : 'lazy';
+      slide.appendChild(image);
+    }
     frame.appendChild(slide);
     return slide;
   });
-  if (slides.length < 2) return;
+  if (which === 'room' && slides.length > 1) {
+    const nav = el('div', 'room-nav');
+    const prev = el('button', 'hero-nav');
+    prev.type = 'button';
+    prev.setAttribute('aria-label', 'Fotoja e mëparshme');
+    prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+    const next = el('button', 'hero-nav');
+    next.type = 'button';
+    next.setAttribute('aria-label', 'Fotoja tjetër');
+    next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+    const dots = el('div', 'hero-dots');
+    items.forEach((_, itemIndex) => {
+      const dot = el('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', String(itemIndex + 1));
+      if (itemIndex === 0) dot.classList.add('is-on');
+      dot.addEventListener('click', () => show(itemIndex));
+      dots.appendChild(dot);
+    });
+    nav.append(prev, dots, next);
+    frame.appendChild(nav);
+    prev.onclick = () => show(index - 1);
+    next.onclick = () => show(index + 1);
+  }
   function show(nextIndex) {
     slides[index].classList.remove('is-on');
+    const dots = frame.querySelectorAll('.hero-dots button');
+    if (dots[index]) dots[index].classList.remove('is-on');
     index = (nextIndex + slides.length) % slides.length;
     slides[index].classList.add('is-on');
+    if (dots[index]) dots[index].classList.add('is-on');
+    slides.forEach((node) => {
+      const video = node.querySelector('video');
+      if (!video) return;
+      if (node === slides[index]) video.play().catch(() => {});
+      else video.pause();
+    });
     arm();
   }
   function arm() {
-    clearInterval(aboutTimer);
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    aboutTimer = setInterval(() => show(index + 1), 3800);
+    const delay = which === 'room' ? 4200 : 3800;
+    if (which === 'room') clearInterval(roomTimer);
+    else clearInterval(aboutTimer);
+    if (slides.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
+    const timer = setInterval(() => show(index + 1), delay);
+    if (which === 'room') roomTimer = timer;
+    else aboutTimer = timer;
+    return timer;
   }
-  arm();
+  return arm();
 }
 
 function render() {
@@ -278,7 +271,7 @@ function render() {
   if (page.heroVideoUrl) gallery.appendChild(mountEmbed(page.heroVideoUrl));
   const slides = [];
   const masonry = el('div', 'gallery-masonry');
-  page.gallery.filter((item) => item.placement !== 'hero').forEach((item) => {
+  page.gallery.filter((item) => item.placement === 'gallery').forEach((item) => {
     if (item.mediaType === 'tiktok' || item.mediaType === 'instagram') {
       gallery.appendChild(mountEmbed(item.url));
       return;

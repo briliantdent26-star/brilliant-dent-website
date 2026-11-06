@@ -820,7 +820,7 @@ app.delete('/api/admin/social/:id', requireAdmin, async (req, res) => {
 app.post('/api/admin/gallery', requireAdmin, upload.single('file'), async (req, res) => {
   try {
     const clinic = req.body.clinic === 'aesthetic' ? 'aesthetic' : 'dent';
-    const placement = req.body.placement === 'hero' ? 'hero' : 'gallery';
+    const placement = ['hero', 'gallery', 'middle'].includes(req.body.placement) ? req.body.placement : 'gallery';
     let mediaType = 'image';
     let url = String(req.body.url || '').trim();
     if (req.file) {
