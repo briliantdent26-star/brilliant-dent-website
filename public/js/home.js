@@ -1,32 +1,12 @@
-const GEAR = {
-  sq: [
-    ['fa-solid fa-x-ray', 'Skaner CBCT 3D'],
-    ['fa-solid fa-bolt', 'Laser Er:YAG'],
-    ['fa-solid fa-gears', 'Sistem CAD/CAM'],
-    ['fa-solid fa-tooth', 'Skanerë të përshtypjes digjitale'],
-    ['fa-solid fa-microscope', 'Mikroskop kirurgjik'],
-    ['fa-solid fa-sun', 'Sistem zbardhimi LED'],
-    ['fa-solid fa-chair', 'Karrige dentare të gjeneratës së fundit']
-  ],
-  en: [
-    ['fa-solid fa-x-ray', 'CBCT 3D scanner'],
-    ['fa-solid fa-bolt', 'Er:YAG laser'],
-    ['fa-solid fa-gears', 'CAD/CAM system'],
-    ['fa-solid fa-tooth', 'Digital impression scanners'],
-    ['fa-solid fa-microscope', 'Surgical microscope'],
-    ['fa-solid fa-sun', 'LED whitening system'],
-    ['fa-solid fa-chair', 'Latest-generation dental chairs']
-  ],
-  de: [
-    ['fa-solid fa-x-ray', 'CBCT-3D-Scanner'],
-    ['fa-solid fa-bolt', 'Er:YAG-Laser'],
-    ['fa-solid fa-gears', 'CAD/CAM-System'],
-    ['fa-solid fa-tooth', 'Digitale Abformscanner'],
-    ['fa-solid fa-microscope', 'Operationsmikroskop'],
-    ['fa-solid fa-sun', 'LED-Bleaching-System'],
-    ['fa-solid fa-chair', 'Zahnarztstühle der neuesten Generation']
-  ]
-};
+const GEAR_ICONS = [
+  'fa-solid fa-x-ray',
+  'fa-solid fa-bolt',
+  'fa-solid fa-gears',
+  'fa-solid fa-tooth',
+  'fa-solid fa-microscope',
+  'fa-solid fa-sun',
+  'fa-solid fa-chair'
+];
 
 function doctorBy(data, slug) {
   return [...data.dent.doctors, ...data.aesthetic.doctors].find((item) => item.slug === slug);
@@ -37,8 +17,8 @@ function paint(data) {
   const aes = data.aesthetic.gallery.find((item) => item.placement === 'hero' && item.mediaType === 'image') || data.aesthetic.gallery.find((item) => item.mediaType === 'image');
   const dentImg = document.querySelector('#doorDent');
   const aesImg = document.querySelector('#doorAes');
-  if (dent) { dentImg.src = dent.url; dentImg.alt = tx(dent.caption) || 'Brilliant Dent'; }
-  if (aes) { aesImg.src = aes.url; aesImg.alt = tx(aes.caption) || 'Brilliant Aesthetic'; }
+  if (dent) { dentImg.src = dent.url; dentImg.alt = tx(dent.caption) || t('altDoorDent'); }
+  if (aes) { aesImg.src = aes.url; aesImg.alt = tx(aes.caption) || t('altDoorAes'); }
   document.querySelector('#story').textContent = t('story');
   document.querySelector('#learn').textContent = t('learn');
   document.querySelector('#year').textContent = String(new Date().getFullYear());
@@ -58,7 +38,8 @@ function paint(data) {
 
   const equip = document.querySelector('#equip');
   equip.replaceChildren();
-  (GEAR[getLang()] || GEAR.sq).forEach(([icon, label]) => {
+  gearLabels().forEach((label, index) => {
+    const icon = GEAR_ICONS[index] || 'fa-solid fa-tooth';
     const card = el('article', 'reveal');
     const mark = el('i', icon);
     mark.setAttribute('aria-hidden', 'true');
@@ -97,4 +78,4 @@ function paint(data) {
 }
 
 bindLang(() => { if (window.__bda) paint(window.__bda); });
-loadContent().then((data) => { window.__bda = data; paint(data); });
+window.bdaI18n.then(() => loadContent().then((data) => { window.__bda = data; paint(data); }));

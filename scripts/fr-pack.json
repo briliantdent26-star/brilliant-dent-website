@@ -1,0 +1,174 @@
+{
+  "clinics": {
+    "dent": {
+      "kicker": "Brilliant Dent",
+      "heroTitle": "Un sourire conçu avec précision.",
+      "heroSubtitle": "Implantologie, Smile Design et dentisterie au laser — sous la responsabilité de l'équipe du Dr Burim Buzhala.",
+      "aboutTitle": "Un soin posé, un standard européen.",
+      "aboutBody": "Brilliant Dent est notre clinique dentaire à Ferizaj, inaugurée le 26 juin 2026. Le Dr Burim Buzhala apporte plus d'une décennie d'expérience en implantologie, chirurgie orale, Smile Design et dentisterie au laser."
+    },
+    "aesthetic": {
+      "kicker": "Brilliant Aesthetic",
+      "heroTitle": "Une beauté naturelle, affinée avec mesure.",
+      "heroSubtitle": "PRX-T33, contour des lèvres et soin du visage — avec Vjollca S. Buzhala.",
+      "aboutTitle": "Une esthétique qui ne change pas l'expression.",
+      "aboutBody": "Brilliant Aesthetic est notre espace pour l'esthétique du visage et de la peau. Vjollca S. Buzhala travaille avec mesure et des résultats naturels."
+    }
+  },
+  "services": {
+    "8c416e06-60de-4312-b450-793cb71ea1db": {
+      "title": "Implantologie dentaire",
+      "description": "Les implants de dernière génération, dont Straumann et Nobel Biocare, sont planifiés selon l'os et le sourire. Le scanner CBCT 3D et la chirurgie guidée rendent la pose plus précise et plus calme. Quand le cas le permet, l'implant est mis en charge tout de suite avec une dent provisoire. Les arcades complètes sont restaurées avec les protocoles All-on-4 et All-on-6, et des prothèses sur implants."
+    },
+    "e2422d0d-7be8-4f59-97e4-e27abdc5b7c0": {
+      "title": "Smile Design et esthétique dentaire",
+      "description": "Le Smile Design numérique planifie la forme, la couleur et les proportions des dents avant le début du travail. Les facettes en porcelaine, le bonding composite et le remodelage sont réalisés avec la technologie CAD/CAM. Le but est un sourire naturel, stable à la lumière du jour et en photo. Chaque étape est expliquée, de l'essai numérique à la pose définitive."
+    },
+    "a0ae4335-be53-4b68-a3e2-a8909891a31e": {
+      "title": "Dentisterie au laser",
+      "description": "Les lasers Er:YAG et diode sont utilisés pour les cavités, le contour gingival et pour accélérer le blanchiment. La chirurgie des tissus mous se fait sans bistouri, avec moins de saignement et une récupération plus calme. La procédure est planifiée selon le tissu et ne remplace pas le diagnostic. L'anesthésie et l'énergie du laser sont choisies pour le cas, pas comme une recette unique."
+    },
+    "3dc6c741-64bd-484b-9218-89c6a24ae05c": {
+      "title": "Chirurgie orale",
+      "description": "La chirurgie orale couvre l'extraction des dents de sagesse, les extractions chirurgicales, la greffe osseuse et le soulevé de sinus. Le retrait de kystes, l'apicectomie et la frénectomie se font quand le tissu l'exige. La planification s'appuie sur la radiographie numérique et, si besoin, sur un scanner 3D. Après la procédure, des consignes claires sont données pour la douleur, l'alimentation et le contrôle."
+    },
+    "5f9cfabc-0d9e-4faf-9cfb-094ee6d671da": {
+      "title": "Endodontie",
+      "description": "Le traitement canalaire se fait avec des instruments rotatifs NiTi et un localisateur d'apex, pour mesurer la longueur de travail avec précision. Le microscope est utilisé quand l'anatomie du canal est étroite ou cachée. Les canaux déjà échoués peuvent être retraités. Le but est de garder la dent, d'éliminer l'infection et de sceller le canal de façon stable."
+    },
+    "4c29599e-67c9-47fa-9b3d-1f7e6a3f34d2": {
+      "title": "Prothèse dentaire",
+      "description": "Les couronnes en zircone et e.max, les bridges et les prothèses amovibles sont faits selon l'occlusion et la couleur des dents voisines. Les prothèses sur implants et les attachements de précision sont utilisés quand plus de stabilité est nécessaire. Les empreintes numériques aident le travail du laboratoire à s'ajuster. Un essayage a lieu avant le scellement, pour régler le contact et l'esthétique."
+    },
+    "e1f885c9-da12-4465-afc2-2950720ee50b": {
+      "title": "Orthodontie",
+      "description": "L'orthodontie corrige la position des dents et l'occlusion chez les jeunes et les adultes. Des aligneurs transparents Invisalign, des appareils céramiques et des appareils métalliques classiques sont proposés. Après le traitement, des contentions maintiennent le résultat. Le plan commence par des analyses et une explication de la durée, pas par un appareil choisi sans diagnostic."
+    },
+    "569a7476-beb7-4c5d-930d-53ede1c32dee": {
+      "title": "Dentisterie conservatrice",
+      "description": "La dentisterie conservatrice garde le plus possible de tissu dentaire sain. Les obturations en composite de la couleur de la dent, les inlays et les onlays ferment la cavité sans l'élargir sans raison. Une préparation minimale et une bonne isolation rendent le collage plus durable. Le contrôle après le soin vérifie que le contact de l'occlusion est confortable."
+    },
+    "0bac3ce8-48b3-4ed0-b75c-00a114f34025": {
+      "title": "Parodontologie",
+      "description": "La parodontologie traite la gencive inflammée et la perte de soutien de la dent. Le nettoyage en profondeur, détartrage et surfaçage, retire les dépôts sous la gencive. Si la poche reste, une chirurgie de réduction, une greffe gingivale ou un traitement parodontal au laser peut suivre. Sans un nettoyage régulier à la maison, le résultat ne se maintient pas."
+    },
+    "269cc339-5fc4-4823-b892-940f650a2c0a": {
+      "title": "Blanchiment dentaire",
+      "description": "Le blanchiment professionnel au cabinet se fait avec les systèmes Zoom et Beyond, la gencive étant protégée. Les kits à domicile poursuivent le résultat avec une dose contrôlée. Pour les dents déjà traitées par un canal, un blanchiment interne est possible. La teinte atteignable dépend de l'émail et des obturations, qui ne blanchissent pas comme la dent."
+    },
+    "ddfe4165-07d3-4281-b4ff-d48636ba1a14": {
+      "title": "Dentisterie pédiatrique",
+      "description": "Les soins des enfants commencent par une visite calme, sans précipitation et sans mots qui font peur. Des sealants préventifs, du fluor et un mainteneur d'espace sont utilisés quand une dent de lait est perdue tôt. Le soin est expliqué à l'enfant, pas seulement au parent. Le but est une expérience douce et une habitude de contrôle qui continue."
+    },
+    "afe94d68-7963-4acd-b8eb-feb4d5e05a29": {
+      "title": "Radiologie dentaire et diagnostic",
+      "description": "Le diagnostic s'appuie sur des radiographies numériques panoramiques et rétro-alvéolaires, avec une dose contrôlée. Le scanner CBCT 3D est utilisé quand l'implant, la chirurgie ou le canal demande une vue en trois dimensions. Une caméra intra-orale montre ce que le miroir ne rend pas clair. Les empreintes numériques remplacent le matériau classique quand le cas le permet."
+    },
+    "c5cd1928-4f53-470c-9635-9c9fc0b677c9": {
+      "title": "Urgence dentaire",
+      "description": "Une douleur forte, une dent cassée, un traumatisme et un abcès sont reçus comme une urgence. Appelez la clinique à toute heure : la ligne est ouverte 24 heures sur 24, sept jours sur sept. La douleur est d'abord calmée et la dent stabilisée, puis le traitement complet est planifié. Le drainage de l'abcès et la réparation de la fracture se font dès que le cas est évalué."
+    },
+    "d3c51bac-3a77-43a9-935e-6babb821b019": {
+      "title": "Dentisterie préventive",
+      "description": "Les contrôles réguliers et le nettoyage professionnel retirent les dépôts avant qu'ils ne deviennent une cavité ou un problème de gencive. On vous montre comment nettoyer les zones qu'une brosse habituelle laisse. Pour le sport, des protège-dents adaptés sont faits, et pour le grincement nocturne une gouttière de nuit. Prévenir est plus calme que réparer une dent déjà abîmée."
+    },
+    "3de5bd44-3aa9-4a97-9732-fad8f99be83e": {
+      "title": "Biorévitalisation PRX-T33",
+      "description": "PRX-T33 est une biorévitalisation sans aiguilles. Elle améliore la texture de la peau, resserre les pores et atténue la pigmentation. Elle donne un effet lifting et un éclat naturel. Il n'y a pas de temps de récupération."
+    },
+    "e5dc7247-66ed-499f-8bae-e22014ba02e1": {
+      "title": "Augmentation des lèvres",
+      "description": "L'augmentation des lèvres se fait à l'acide hyaluronique pour un volume, une forme et une symétrie naturels. Le résultat peut rester léger ou plus marqué, selon votre souhait. Le plan est discuté avant la procédure, pour que les lèvres restent en proportion avec le visage. Le but est une forme calme, pas le même aspect pour tout le monde."
+    },
+    "63dc55df-880b-4755-854d-9ef2546a6b29": {
+      "title": "Comblement du visage",
+      "description": "Les comblements du visage rendent du volume aux pommettes, à la ligne mandibulaire, au menton, aux plis nasolabiaux et aux creux sous les yeux. Le contour reste naturel et lié à vos traits. Le produit et la quantité sont choisis après l'évaluation du visage. Le but est la fraîcheur, pas un autre visage."
+    },
+    "de0ba38b-7c1a-4f31-a613-6c2edd59743a": {
+      "title": "Botox / anti-rides",
+      "description": "Le Botox est une toxine botulique qui adoucit les rides du front, les pattes d'oie et la ride entre les sourcils. Le traitement peut être préventif ou correctif. La dose suit le muscle et votre expression. Le but est un visage plus frais, sans le figer."
+    },
+    "8b1dafe4-84a2-4272-a20b-9e91247f16cd": {
+      "title": "Traitement des rides",
+      "description": "Le traitement des rides associe comblement, Botox et raffermissement de la peau, selon le besoin. Ce n'est pas une seule procédure pour chaque visage. Le plan est construit après l'évaluation, pour que le rajeunissement reste complet et naturel. Le résultat vise la fraîcheur, pas un masque."
+    },
+    "50894b2b-370a-4eae-8ceb-0f81966b0732": {
+      "title": "Microneedling avec PRP",
+      "description": "Le microneedling avec PRP, aussi appelé vampire facial, stimule le collagène et utilise le plasma riche en plaquettes. Il aide le renouvellement de la peau, l'atténuation des marques et la texture. Le soin est planifié selon votre peau. La récupération et le nombre de séances sont expliqués avant de commencer."
+    },
+    "30ea4f7a-97cd-40d9-9871-4389f377b04b": {
+      "title": "Peeling chimique",
+      "description": "Le peeling chimique médical est utilisé pour les marques d'acné, les dommages du soleil, l'hyperpigmentation et le renouvellement de la peau. Il peut être superficiel, moyen ou profond, selon la peau. Le type est choisi après l'évaluation, pas sur une liste fixe. Le soin après le traitement fait partie du plan."
+    },
+    "da940b88-1103-48ca-a4cc-7ba4761e7d62": {
+      "title": "Mésothérapie du visage",
+      "description": "La mésothérapie du visage est une micro-injection de vitamines, d'acide hyaluronique et d'antioxydants dans la peau. Elle vise une hydratation profonde et de l'éclat. La composition suit une peau sèche, fatiguée ou terne. Les séances et le soin à la maison sont expliqués clairement."
+    },
+    "5374e381-7cc1-42f9-90dc-2cc4c97796e1": {
+      "title": "Traitement de l'acné",
+      "description": "Le traitement de l'acné est un programme complet, pas une séance unique. Il peut inclure un peeling chimique, une thérapie LED, un nettoyage et un protocole d'entretien. Le plan dépend du type de peau et d'acné. Le but est une peau plus calme et une routine que vous pouvez tenir."
+    },
+    "441f4479-5100-4c02-a1be-5bfe1fa253bd": {
+      "title": "Skin boosters",
+      "description": "Les skin boosters, dont Profhilo et Skinvive, sont de l'acide hyaluronique injectable pour la qualité de la peau. Ils apportent une hydratation profonde, de l'élasticité et une surface plus calme. Ils ne visent pas à changer la forme du visage. Le choix se fait après l'évaluation de la peau."
+    },
+    "610459c5-79fe-4df3-8ff6-8fc663999a50": {
+      "title": "Épilation au laser",
+      "description": "L'épilation au laser vise une réduction durable avec une technologie diode et Nd:YAG de nouvelle génération. Elle convient à différents types de peau, car le paramètre est choisi individuellement. La zone et le nombre de séances sont planifiés en consultation. La peau est évaluée avant chaque séance."
+    },
+    "281601de-ebef-4460-9d18-2e770fabe26f": {
+      "title": "Traitement de la pigmentation",
+      "description": "Le traitement de la pigmentation concerne les taches foncées, le mélasma et un teint irrégulier. Laser, peeling et produits médicaux locaux peuvent être utilisés. La cause et la profondeur de la tache sont évaluées avant le choix. La protection solaire fait partie du résultat."
+    },
+    "f39cb678-8ad6-485d-8e26-1bb5e1e4fb65": {
+      "title": "Lifting sans chirurgie",
+      "description": "Le lifting sans chirurgie utilise des fils, le HIFU ou la radiofréquence pour un visage plus soutenu et mieux contouré. Il ne remplace pas la chirurgie quand elle est nécessaire. La méthode est choisie selon la peau et la zone. Le résultat vise un contour plus net, avec l'expression conservée."
+    },
+    "4fb76e5e-8868-4e57-a4f7-684662af756a": {
+      "title": "Soin médical de la peau",
+      "description": "Le soin médical de la peau est une consultation personnalisée et le choix de produits médicaux pour une santé de la peau sur la durée. La routine est construite selon la peau, pas selon une tendance. Les produits sont expliqués : ce que vous utilisez le matin, ce que vous utilisez le soir. Le but est une peau calme, tenue par un soin régulier."
+    }
+  },
+  "doctors": {
+    "11111111-1111-4111-8111-111111111111": {
+      "title": "M. Sc. MD, DMD · Implantologue et Laser Master",
+      "bio": "Le Dr Burim Buzhala dirige la dentisterie chez Brilliant Dent. Son travail réunit l'implantologie, la chirurgie orale, le Smile Design et le traitement au laser, avec un plan clair avant le début de toute procédure.",
+      "education": "M. Sc. MD, DMD. Son profil public mentionne un M.Sc. en lasers en médecine et dentisterie, ainsi que l'Université de Prishtina, la RWTH Aachen, la Goethe-Universität Frankfurt, l'Université d'Oslo et l'Universität Bern.",
+      "experience": "Plus d'une décennie de pratique clinique. La nouvelle clinique au Rr. Riza Goga a été inaugurée le 26 juin 2026.",
+      "certifications": "Implantologue dentaire et Laser Master. Dentisterie esthétique, chirurgie orale et Smile Design.",
+      "services": ["Implantologie dentaire", "Smile Design", "Dentisterie au laser", "Chirurgie orale"]
+    },
+    "22222222-2222-4222-8222-222222222222": {
+      "title": "Spécialiste de l'esthétique du visage et de la peau",
+      "bio": "Vjollca S. Buzhala s'occupe de l'esthétique du visage chez Brilliant Aesthetic : une peau plus lumineuse, des lèvres en harmonie avec le visage et une fraîcheur qui ne change pas l'expression.",
+      "education": "Spécialisation en esthétique du visage et de la peau.",
+      "experience": "Membre de la nouvelle clinique Brilliant Dent & Aesthetic, inaugurée à Ferizaj en 2026.",
+      "certifications": "PRX-T33, contour des lèvres et soins pour rafraîchir la peau.",
+      "services": ["Biorévitalisation PRX-T33", "Augmentation des lèvres", "Soin du visage"]
+    }
+  },
+  "contact": {
+    "address": "Rr. Riza Goga 94, Ferizaj, Kosovo",
+    "hours": [
+      { "days": "Lundi – Samedi", "time": "09:00 – 20:00" },
+      { "days": "Dimanche", "time": "Fermé" }
+    ]
+  },
+  "captions": {
+    "Hyrja e klinikës": "Entrée de la clinique",
+    "Recepsioni": "Réception",
+    "Kabineti": "Cabinet",
+    "Certifikatat në klinikë": "Certificats dans la clinique",
+    "Hapësira e pritjes": "Salle d'attente",
+    "Salla e bisedës": "Salle de consultation",
+    "Kabineti i estetikës": "Cabinet d'esthétique",
+    "Salla e klinikës": "Salle de la clinique",
+    "Kujdesi i fytyrës": "Soin du visage"
+  },
+  "social": {
+    "Faqja e klinikës": "Page de la clinique",
+    "Instagram": "Instagram",
+    "Facebook": "Facebook",
+    "TikTok": "TikTok"
+  }
+}

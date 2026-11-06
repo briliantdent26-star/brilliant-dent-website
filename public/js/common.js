@@ -1,90 +1,31 @@
-const UI = {
-  sq: {
-    home: 'Ballina', dent: 'Stomatologji', aes: 'Estetikë fytyre', services: 'Shërbimet', staff: 'Stafi',
-    gallery: 'Galeria', contact: 'Kontakt', book: 'Cakto terminin', exploreDent: 'Eksploro shërbimet',
-    exploreAes: 'Rezervo terminin estetik', about: 'Rreth nesh', work: 'Para dhe pas',
-    name: 'Emri dhe mbiemri', phone: 'Telefoni', email: 'Email-i', service: 'Shërbimi', date: 'Data e dëshiruar',
-    message: 'Mesazhi', send: 'Dërgo kërkesën', sent: 'Kërkesa u mor. Klinika do t’ju kontaktojë.',
-    address: 'Adresa', hours: 'Orari', choose: 'Zgjidhni', doctor: 'Profili', back: 'Kthehu te klinika',
-    education: 'Arsimimi', experience: 'Përvoja', certs: 'Certifikimet', bio: 'Biografia',
-    offers: 'Shërbimet që ofron', portfolio: 'Puna e mjekut', empty: 'Ende pa foto.',
-    enter: 'Hyni', slogan: 'Standardi i ri në stomatologji moderne dhe estetikë fytyre.',
-    clinic: 'Klinika', doctorPick: 'Mjeku', time: 'Ora e dëshiruar',
-    testimonials: 'Çka thonë pacientët', testimonialsKicker: 'Vlerësime',
-    leaveReview: 'Lini një vlerësim', submitReview: 'Dërgo vlerësimin',
-    reviewPending: 'Vlerësimi u mor. Do të shfaqet pasi ta miratojë klinika.',
-    noReviews: 'Ende pa vlerësime të publikuara.', reviewsCount: 'vlerësime',
-    yourClinic: 'Klinika', anonymousLabel: 'Anonim', reviewText: 'Vlerësimi',
-    anonymous: 'Pacient', directions: 'Merrni drejtimet',
-    closedSunday: 'Të dielën klinika është e mbyllur.',
-    savedNoMail: 'Kërkesa u ruajt. Klinika do t’ju kontaktojë.',
-    aboutTitle: 'Rreth nesh',
-    story: 'Brilliant Dent & Aesthetic Clinic, e themeluar nga Dr. Burim Buzhala, ofron mbi 15 vjet përvojë në stomatologji moderne dhe estetikë fytyre. Me mbi 14 salla të pajisura me teknologjinë më të fundit evropiane dhe amerikane, klinika ka trajtuar me sukses dhjetëra mijëra pacientë nga Kosova dhe diaspora. Çdo procedurë kryhet me standardet më të larta ndërkombëtare, duke garantuar siguri, precizion dhe rezultate të shkëlqyera.',
-    statYears: 'Vjet përvojë', statRooms: 'Salla moderne', statPatients: 'Pacientë të kënaqur', statSat: 'Shkallë kënaqësie',
-    equipTitle: 'Teknologjia në klinikë',
-    learn: 'Ekipi vazhdon arsimimin profesional në implantologji, laser dhe estetikë të fytyrës. Te profilet e mjekëve shfaqen vetëm certifikimet që janë të regjistruara aty.'
-  },
-  en: {
-    home: 'Home', dent: 'Dentistry', aes: 'Facial aesthetics', services: 'Services', staff: 'Team',
-    gallery: 'Gallery', contact: 'Contact', book: 'Book a visit', exploreDent: 'Explore dental care',
-    exploreAes: 'Book an aesthetic visit', about: 'About', work: 'Before and after',
-    name: 'Full name', phone: 'Phone', email: 'Email', service: 'Service', date: 'Preferred date',
-    message: 'Message', send: 'Send request', sent: 'Request received. The clinic will contact you.',
-    address: 'Address', hours: 'Hours', choose: 'Choose', doctor: 'Profile', back: 'Back to the clinic',
-    education: 'Education', experience: 'Experience', certs: 'Certifications', bio: 'Biography',
-    offers: 'Services offered', portfolio: 'Selected work', empty: 'No photo yet.',
-    enter: 'Enter', slogan: 'A new standard in modern dentistry and facial aesthetics.',
-    clinic: 'Clinic', doctorPick: 'Doctor', time: 'Preferred time',
-    testimonials: 'What patients say', testimonialsKicker: 'Reviews',
-    leaveReview: 'Leave a review', submitReview: 'Send review',
-    reviewPending: 'Thank you. Your review appears after the clinic approves it.',
-    noReviews: 'No published reviews yet.', reviewsCount: 'reviews',
-    yourClinic: 'Clinic', anonymousLabel: 'Anonymous', reviewText: 'Review',
-    anonymous: 'Patient', directions: 'Get directions',
-    closedSunday: 'The clinic is closed on Sunday.',
-    savedNoMail: 'Your request is saved. The clinic will contact you.',
-    aboutTitle: 'About us',
-    story: 'Brilliant Dent & Aesthetic Clinic, founded by Dr. Burim Buzhala, brings more than 15 years in modern dentistry and facial aesthetics. With more than 14 rooms equipped with current European and American technology, the clinic has cared for tens of thousands of patients from Kosovo and the diaspora. Every procedure follows high international standards, with safety, precision and a clear result.',
-    statYears: 'Years of experience', statRooms: 'Modern rooms', statPatients: 'Patients cared for', statSat: 'Satisfaction',
-    equipTitle: 'Technology in the clinic',
-    learn: 'The team continues its education in implantology, laser dentistry and facial aesthetics. Doctor profiles show only the certifications already recorded there.'
-  },
-  de: {
-    home: 'Start', dent: 'Zahnmedizin', aes: 'Gesichtsästhetik', services: 'Leistungen', staff: 'Team',
-    gallery: 'Galerie', contact: 'Kontakt', book: 'Termin vereinbaren', exploreDent: 'Zahnleistungen ansehen',
-    exploreAes: 'Ästhetik-Termin buchen', about: 'Über uns', work: 'Vorher und nachher',
-    name: 'Name', phone: 'Telefon', email: 'E-Mail', service: 'Leistung', date: 'Wunschdatum',
-    message: 'Nachricht', send: 'Anfrage senden', sent: 'Anfrage erhalten. Die Klinik meldet sich.',
-    address: 'Adresse', hours: 'Öffnungszeiten', choose: 'Wählen', doctor: 'Profil', back: 'Zurück zur Klinik',
-    education: 'Ausbildung', experience: 'Erfahrung', certs: 'Zertifikate', bio: 'Biografie',
-    offers: 'Leistungen', portfolio: 'Arbeiten', empty: 'Noch kein Foto.',
-    enter: 'Eintreten', slogan: 'Ein neuer Standard für moderne Zahnmedizin und Gesichtsästhetik.',
-    clinic: 'Klinik', doctorPick: 'Arzt', time: 'Wunschzeit',
-    testimonials: 'Was Patienten sagen', testimonialsKicker: 'Bewertungen',
-    leaveReview: 'Bewertung schreiben', submitReview: 'Bewertung senden',
-    reviewPending: 'Danke. Die Bewertung erscheint nach Freigabe durch die Klinik.',
-    noReviews: 'Noch keine veröffentlichten Bewertungen.', reviewsCount: 'Bewertungen',
-    yourClinic: 'Klinik', anonymousLabel: 'Anonym', reviewText: 'Bewertung',
-    anonymous: 'Patient', directions: 'Route öffnen',
-    closedSunday: 'Sonntags ist die Klinik geschlossen.',
-    savedNoMail: 'Die Anfrage ist gespeichert. Die Klinik meldet sich.',
-    aboutTitle: 'Über uns',
-    story: 'Brilliant Dent & Aesthetic Clinic, gegründet von Dr. Burim Buzhala, bringt mehr als 15 Jahre moderne Zahnmedizin und Gesichtsästhetik. Mit mehr als 14 Räumen und aktueller europäischer und amerikanischer Technologie hat die Klinik Zehntausende Patienten aus dem Kosovo und der Diaspora betreut. Jeder Eingriff folgt hohen internationalen Standards, mit Sicherheit, Präzision und einem klaren Ergebnis.',
-    statYears: 'Jahre Erfahrung', statRooms: 'Moderne Räume', statPatients: 'Betreute Patienten', statSat: 'Zufriedenheit',
-    equipTitle: 'Technologie in der Klinik',
-    learn: 'Das Team bildet sich in Implantologie, Laserzahnmedizin und Gesichtsästhetik weiter. Auf den Profilen stehen nur die Zertifikate, die dort bereits eingetragen sind.'
-  }
-};
+let UI = { sq: {}, en: {}, de: {}, fr: {} };
+
+window.bdaI18n = fetch('/translations.json')
+  .then((response) => response.json())
+  .then((data) => {
+    UI = data;
+    applyI18n();
+    return data;
+  })
+  .catch(() => UI);
 
 function getLang() {
   const saved = localStorage.getItem('bda-lang');
-  return saved === 'en' || saved === 'de' ? saved : 'sq';
+  return saved === 'en' || saved === 'de' || saved === 'fr' ? saved : 'sq';
 }
 function setLang(lang) {
-  localStorage.setItem('bda-lang', lang);
-  document.documentElement.lang = lang;
+  const next = lang === 'en' || lang === 'de' || lang === 'fr' ? lang : 'sq';
+  localStorage.setItem('bda-lang', next);
+  document.documentElement.lang = next;
 }
-function t(key) { return UI[getLang()][key] || UI.sq[key] || key; }
+function t(key) {
+  const pack = UI[getLang()] || UI.sq || {};
+  return pack[key] || (UI.sq && UI.sq[key]) || key;
+}
+function gearLabels() {
+  const pack = UI[getLang()] || UI.sq || {};
+  return Array.isArray(pack.gear) ? pack.gear : ((UI.sq && UI.sq.gear) || []);
+}
 function tx(value) {
   if (!value) return '';
   if (typeof value === 'string') return value;
@@ -96,12 +37,68 @@ function el(tag, className, text) {
   if (text != null) node.textContent = text;
   return node;
 }
+function setHeadMeta(selector, attrs, content) {
+  let node = document.head.querySelector(selector);
+  if (!node) {
+    node = document.createElement('meta');
+    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+    document.head.appendChild(node);
+  }
+  node.setAttribute('content', content);
+}
+function applySeo() {
+  if (location.pathname.startsWith('/admin')) return;
+  const path = location.pathname;
+  let titleKey = 'metaHomeTitle';
+  let descKey = 'metaHomeDesc';
+  let image = '/media/dent/hero-1.webp';
+  let canonical = 'https://briliantdent.com/';
+  if (path.startsWith('/dent')) {
+    titleKey = 'metaDentTitle';
+    descKey = 'metaDentDesc';
+    canonical = 'https://briliantdent.com/dent';
+  } else if (path.startsWith('/estetike')) {
+    titleKey = 'metaAesTitle';
+    descKey = 'metaAesDesc';
+    image = '/media/aes/hero-1.webp';
+    canonical = 'https://briliantdent.com/estetike';
+  } else if (path.startsWith('/doktori')) {
+    titleKey = 'metaDoctorTitle';
+    descKey = 'metaDoctorDesc';
+    canonical = `https://briliantdent.com${path}`;
+  }
+  const title = t(titleKey);
+  const description = t(descKey);
+  if (!path.startsWith('/doktori') && title !== titleKey) document.title = title;
+  const imageUrl = `https://briliantdent.com${image}`;
+  const shownTitle = path.startsWith('/doktori') ? document.title : title;
+  setHeadMeta('meta[name="description"]', { name: 'description' }, description);
+  setHeadMeta('meta[name="keywords"]', { name: 'keywords' }, t('metaKeywords'));
+  setHeadMeta('meta[property="og:title"]', { property: 'og:title' }, shownTitle);
+  setHeadMeta('meta[property="og:description"]', { property: 'og:description' }, description);
+  setHeadMeta('meta[property="og:image"]', { property: 'og:image' }, imageUrl);
+  setHeadMeta('meta[property="og:url"]', { property: 'og:url' }, canonical);
+  setHeadMeta('meta[property="og:type"]', { property: 'og:type' }, 'website');
+  setHeadMeta('meta[name="twitter:card"]', { name: 'twitter:card' }, 'summary_large_image');
+  setHeadMeta('meta[name="twitter:title"]', { name: 'twitter:title' }, shownTitle);
+  setHeadMeta('meta[name="twitter:description"]', { name: 'twitter:description' }, description);
+  setHeadMeta('meta[name="twitter:image"]', { name: 'twitter:image' }, imageUrl);
+  let link = document.head.querySelector('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+  }
+  link.href = canonical;
+}
 function applyI18n() {
   document.documentElement.lang = getLang();
   document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-alt]').forEach((node) => { node.alt = t(node.dataset.i18nAlt); });
   document.querySelectorAll('.langs button').forEach((button) => {
     button.setAttribute('aria-pressed', button.dataset.lang === getLang() ? 'true' : 'false');
   });
+  applySeo();
 }
 function bindLang(redraw) {
   document.querySelectorAll('.langs button').forEach((button) => {
@@ -288,7 +285,8 @@ function mountMotion() {
     seen.add(node);
     const target = Number(node.dataset.count);
     const suffix = node.dataset.suffix || '';
-    const locale = getLang() === 'en' ? 'en-US' : 'de-DE';
+    const locales = { sq: 'sq-AL', en: 'en-US', de: 'de-DE', fr: 'fr-FR' };
+    const locale = locales[getLang()] || 'sq-AL';
     const paint = (value) => { node.textContent = `${Number(value).toLocaleString(locale)}${suffix}`; };
     if (reduce || !target) { paint(target); return; }
     const start = performance.now();

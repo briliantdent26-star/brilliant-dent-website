@@ -58,10 +58,12 @@ function render() {
       const box = el('div', 'ba');
       const after = el('img');
       after.src = item.afterUrl;
-      after.alt = tx(item.caption);
+      after.alt = tx(item.caption) || t('after');
+      after.loading = 'lazy';
       const before = el('img', 'before');
       before.src = item.beforeUrl;
-      before.alt = 'Before';
+      before.alt = t('before');
+      before.loading = 'lazy';
       const range = document.createElement('input');
       range.type = 'range'; range.min = '0'; range.max = '100'; range.value = '50';
       box.append(after, before, range, el('div', 'handle'));
@@ -74,6 +76,8 @@ function render() {
     const image = el('img');
     image.src = item.url;
     image.alt = tx(item.caption) || doctor.fullName;
+    image.loading = 'lazy';
+    image.decoding = 'async';
     button.appendChild(image);
     button.addEventListener('click', () => openLightbox(item.url, image.alt));
     work.appendChild(button);
@@ -82,13 +86,18 @@ function render() {
   const book = document.querySelector('#book');
   book.href = `${homeClinic}#kontakt`;
   applyI18n();
+  document.title = `${doctor.fullName} · Brilliant Dent`;
+  const ogTitle = document.head.querySelector('meta[property="og:title"]');
+  const twTitle = document.head.querySelector('meta[name="twitter:title"]');
+  if (ogTitle) ogTitle.content = document.title;
+  if (twTitle) twTitle.content = document.title;
 }
 
 bindLang(() => render());
-fetch(`/api/doctors/${slug}`).then(async (response) => {
+window.bdaI18n.then(() => fetch(`/api/doctors/${slug}`).then(async (response) => {
   if (!response.ok) throw new Error('missing');
   payload = await response.json();
   render();
 }).catch(() => {
   document.querySelector('#name').textContent = 'Profili nuk u gjet.';
-});
+}));

@@ -24,7 +24,7 @@ async function refresh() {
 function langs(value, onType, multiline = true) {
   const grid = document.createElement('div');
   grid.className = 'lang-grid';
-  ['sq', 'en', 'de'].forEach((lang) => {
+  ['sq', 'en', 'de', 'fr'].forEach((lang) => {
     const field = document.createElement(multiline ? 'textarea' : 'input');
     field.placeholder = lang.toUpperCase();
     field.value = value?.[lang] || '';

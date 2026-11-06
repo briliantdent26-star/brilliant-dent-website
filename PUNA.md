@@ -36,3 +36,10 @@
 - Fotoja e parë është përsëri fasada e Brilliant Dental Clinic. Te estetika e njëjta ndërtesë, me përshkrimin “Standard i ri në estetikën e fytyrës.” Titulli mbi foto është më i vogël në të dyja anët.
 - Telefoni, tableti dhe ekrani i ngushtë: menuja hapet me buton, heroja hyn në një ekran pa u prerë butoni i terminit, WhatsApp nuk e mbulon. Në ballinë dyert qëndrojnë njëra mbi tjetrën nën 700px dhe krah për krah më gjerë. Përshkrimet e galerisë duken edhe pa mi.
 - Titulli i hero-sliderit qëndron mbi një pllakë të errët, që shkronjat e bardha të lexohen mbi çdo foto, te stomatologjia dhe te estetika.
+
+## 2026-11-06 — Frëngjishtja dhe SEO
+
+- Gjuha FR u shtua pranë SQ, EN dhe DE. Zgjedhja ruhet te shfletuesi dhe shqipja mbetet e parazgjedhur. Tekstet e faqes janë te `public/translations.json`. Paneli i pronarit mbetet shqip dhe tani ka katër fusha për çdo tekst.
+- 14 shërbimet dentare, 14 estetike, të dy profilet, orari, adresa dhe përshkrimet e galerisë kanë frëngjisht. Tekstet shqip, anglisht dhe gjermanisht mbetën. Arsimimi i Vjollcës mbeti “specializim në estetikën e fytyrës dhe të lëkurës”, pa shkollë të shtuar.
+- /dent dhe /estetike kanë titujt e kërkuar, përshkrim, Open Graph, Twitter, canonical dhe JSON-LD me adresën, të dy telefonat, orarin e hënë–shtunë 09:00–20:00 dhe koordinatat 42.3702, 21.1553. sitemap.xml dhe robots.txt janë publikë. Paneli mbetet noindex. Përgjigjet e mëdha dërgohen të ngjeshura.
+- U provua lokalisht: FR te /dent (14 shërbime), /estetike (14), ballina, profili i Vjollcës dhe menuja në 390px. Kthimi te SQ i rikthen tekstet shqip. Pa rrëshqitje horizontale.

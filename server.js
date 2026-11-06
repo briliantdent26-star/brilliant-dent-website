@@ -1,6 +1,8 @@
+const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const express = require('express');
+const compression = require('compression');
 const session = require('express-session');
 const multer = require('multer');
 const sharp = require('sharp');
@@ -62,7 +64,8 @@ function asObject(value) {
   return {
     sq: String(value.sq || '').slice(0, 8000),
     en: String(value.en || '').slice(0, 8000),
-    de: String(value.de || '').slice(0, 8000)
+    de: String(value.de || '').slice(0, 8000),
+    fr: String(value.fr || '').slice(0, 8000)
   };
 }
 
@@ -355,7 +358,7 @@ function doctorPayload(body, fallbackSlug) {
   }
   const theme = body.theme === 'aesthetic' || body.theme === 'dent' ? body.theme : clinics[0];
   const services = Array.isArray(body.services)
-    ? body.services.slice(0, 24).map((item) => asObject(item)).filter((item) => item.sq || item.en || item.de)
+    ? body.services.slice(0, 24).map((item) => asObject(item)).filter((item) => item.sq || item.en || item.de || item.fr)
     : [];
   return {
     slug: slugify(body.slug || fallbackSlug || fullName),
@@ -378,6 +381,7 @@ function doctorPayload(body, fallbackSlug) {
 }
 
 const app = express();
+app.use(compression());
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '1mb' }));
 app.use(session({
@@ -395,8 +399,109 @@ app.use(session({
 const loginAttempts = new Map();
 const reviewAttempts = new Map();
 
-function page(file) {
-  return (req, res) => res.sendFile(path.join(publicDir, file));
+const SITE = 'https://briliantdent.com';
+
+function escHtml(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function businessJson(kind) {
+  const hours = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: day,
+    opens: '09:00',
+    closes: '20:00'
+  }));
+  const shared = {
+    email: 'briliantdent26@gmail.com',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Rruga Riza Goga 94',
+      addressLocality: 'Ferizaj',
+      addressCountry: 'XK'
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: 42.3702, longitude: 21.1553 },
+    openingHours: 'Mo-Sa 09:00-20:00',
+    openingHoursSpecification: hours,
+    contactPoint: [
+      { '@type': 'ContactPoint', telephone: '+38344654129', contactType: 'customer service', availableLanguage: ['sq', 'en', 'de', 'fr'] },
+      { '@type': 'ContactPoint', telephone: '+38344417318', contactType: 'customer service', availableLanguage: ['sq', 'en', 'de', 'fr'] }
+    ]
+  };
+  const dent = {
+    '@type': ['LocalBusiness', 'DentalClinic'],
+    name: 'Brilliant Dent Clinic',
+    url: `${SITE}/dent`,
+    image: `${SITE}/media/dent/hero-1.webp`,
+    telephone: '+38344654129',
+    ...shared
+  };
+  const aesthetic = {
+    '@type': ['LocalBusiness', 'MedicalBusiness'],
+    name: 'Brilliant Aesthetic Clinic',
+    url: `${SITE}/estetike`,
+    image: `${SITE}/media/aes/hero-1.webp`,
+    telephone: '+38344417318',
+    ...shared
+  };
+  if (kind === 'dent') return { '@context': 'https://schema.org', ...dent };
+  if (kind === 'aesthetic') return { '@context': 'https://schema.org', ...aesthetic };
+  return { '@context': 'https://schema.org', '@graph': [dent, aesthetic] };
+}
+
+function seoBlock(kind, canonicalPath) {
+  const pages = {
+    home: {
+      title: 'Brilliant Dent & Aesthetic Clinic | Ferizaj, Kosovë',
+      description: 'Brilliant Dent & Aesthetic Clinic në Ferizaj — stomatologji moderne dhe estetikë fytyre. Rruga Riza Goga 94. E hënë–e shtunë, 09:00–20:00.',
+      image: `${SITE}/media/dent/hero-1.webp`
+    },
+    dent: {
+      title: 'Brilliant Dent Clinic | Stomatologji Moderne në Ferizaj, Kosovë',
+      description: 'Implantologji, Smile Design dhe stomatologji me lazer në Ferizaj. Dr. Burim Buzhala. Rruga Riza Goga 94. E hënë–e shtunë, 09:00–20:00.',
+      image: `${SITE}/media/dent/hero-1.webp`
+    },
+    aesthetic: {
+      title: 'Brilliant Aesthetic Clinic | Estetikë Fytyre në Ferizaj, Kosovë',
+      description: 'Estetikë fytyre në Ferizaj: PRX-T33, buzë dhe kujdes lëkure me Vjollca S. Buzhala. Rruga Riza Goga 94. E hënë–e shtunë, 09:00–20:00.',
+      image: `${SITE}/media/aes/hero-1.webp`
+    },
+    doctor: {
+      title: 'Profili | Brilliant Dent',
+      description: 'Profili i stafit në Brilliant Dent & Aesthetic Clinic, Rruga Riza Goga 94, Ferizaj.',
+      image: `${SITE}/media/dent/hero-1.webp`
+    }
+  };
+  const info = pages[kind] || pages.home;
+  const canonical = `${SITE}${canonicalPath}`;
+  const json = JSON.stringify(businessJson(kind === 'home' || kind === 'doctor' ? 'both' : kind)).replace(/</g, '\\u003c');
+  return [
+    `<title>${escHtml(info.title)}</title>`,
+    `<meta name="description" content="${escHtml(info.description)}">`,
+    `<meta name="keywords" content="stomatolog Ferizaj, dentist Ferizaj, implantologji, estetikë fytyre, Brilliant Dent, Brilliant Aesthetic">`,
+    `<link rel="canonical" href="${escHtml(canonical)}">`,
+    `<meta property="og:title" content="${escHtml(info.title)}">`,
+    `<meta property="og:description" content="${escHtml(info.description)}">`,
+    `<meta property="og:image" content="${escHtml(info.image)}">`,
+    `<meta property="og:url" content="${escHtml(canonical)}">`,
+    `<meta property="og:type" content="website">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escHtml(info.title)}">`,
+    `<meta name="twitter:description" content="${escHtml(info.description)}">`,
+    `<meta name="twitter:image" content="${escHtml(info.image)}">`,
+    `<script type="application/ld+json">${json}</script>`
+  ].join('\n');
+}
+
+function page(file, kind) {
+  return (req, res) => {
+    if (!kind) return res.sendFile(path.join(publicDir, file));
+    let html = fs.readFileSync(path.join(publicDir, file), 'utf8');
+    html = html.replace(/<title>[^<]*<\/title>/, '');
+    const canonicalPath = kind === 'home' ? '/' : req.path;
+    html = html.replace('</head>', `${seoBlock(kind, canonicalPath)}\n</head>`);
+    res.type('html').send(html);
+  };
 }
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
@@ -451,7 +556,7 @@ app.post('/api/appointments', async (req, res) => {
     const page = present(await loadBundle(sbAnon()))[clinic];
     const doctor = page.doctors.find((item) => item.id === String(req.body.doctorId || ''));
     if (!doctor) return res.status(400).json({ error: 'Zgjidhni mjekun.' });
-    const serviceOk = page.services.some((service) => ['sq', 'en', 'de'].some((lang) => String(service.title?.[lang] || '') === serviceName));
+    const serviceOk = page.services.some((service) => ['sq', 'en', 'de', 'fr'].some((lang) => String(service.title?.[lang] || '') === serviceName));
     if (!serviceOk) return res.status(400).json({ error: 'Zgjidhni shërbimin.' });
     const booking = {
       clinic,
@@ -511,7 +616,7 @@ app.post('/api/reviews', async (req, res) => {
       patient_name: anonymous ? '' : patientName.slice(0, 120),
       anonymous,
       rating,
-      body: { sq: text.slice(0, 2000), en: text.slice(0, 2000), de: text.slice(0, 2000) },
+      body: { sq: text.slice(0, 2000), en: text.slice(0, 2000), de: text.slice(0, 2000), fr: text.slice(0, 2000) },
       review_date: today,
       status: 'pending',
       visible: false
@@ -607,7 +712,7 @@ app.put('/api/admin/clinics/:slug', requireAdmin, async (req, res) => {
 app.put('/api/admin/contact', requireAdmin, async (req, res) => {
   const hours = Array.isArray(req.body.hours) ? req.body.hours.slice(0, 8).map((row) => ({
     days: asObject(row.days),
-    time: asObject(typeof row.time === 'string' ? { sq: row.time, en: row.time, de: row.time } : row.time)
+    time: asObject(typeof row.time === 'string' ? { sq: row.time, en: row.time, de: row.time, fr: row.time } : row.time)
   })) : [];
   const { error } = await req.sb.from('contact_info').update({
     address: asObject(req.body.address),
@@ -935,10 +1040,10 @@ app.post('/api/admin/password', requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/', page('index.html'));
-app.get('/dent', page('clinic.html'));
-app.get('/estetike', page('clinic.html'));
-app.get('/doktori/:slug', page('doctor.html'));
+app.get('/', page('index.html', 'home'));
+app.get('/dent', page('clinic.html', 'dent'));
+app.get('/estetike', page('clinic.html', 'aesthetic'));
+app.get('/doktori/:slug', page('doctor.html', 'doctor'));
 app.get('/admin', page('admin.html'));
 app.use(express.static(publicDir));
 

@@ -78,7 +78,7 @@ body.has-hero .nav.solid .brand small, body.has-hero .nav.open .brand small { co
 .nav-links { display: flex; gap: 1.1rem; margin-left: auto; align-items: center; }
 .nav-links a { text-decoration: none; font-size: 0.92rem; }
 .nav-links a:hover { color: var(--gold); }
-.langs { display: flex; gap: 0.25rem; }
+.langs { display: flex; gap: 0.25rem; flex-wrap: wrap; }
 .langs button, .menu-btn {
   border: 1px solid var(--line); background: transparent; color: var(--ink);
   border-radius: 999px; padding: 0.25rem 0.5rem; cursor: pointer;
@@ -409,7 +409,7 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
 .staff-row { grid-template-columns: 64px 1fr auto; align-items: center; }
 .staff-row img, .ph { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #f0ebe3; }
 .row-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; }
-.lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.lang-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 .muted { color: #6d6258; font-size: 0.9rem; }
 .error { color: #8d2d2d; }
 

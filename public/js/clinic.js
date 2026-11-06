@@ -23,8 +23,9 @@ function carousel(images) {
     const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
     const image = el('img');
     image.src = item.url;
-    image.alt = tx(item.caption) || (clinicKey === 'aesthetic' ? 'Brilliant Aesthetic' : 'Brilliant Dent');
+    image.alt = tx(item.caption) || t(clinicKey === 'aesthetic' ? 'altAesHero' : 'altDentHero');
     image.loading = itemIndex === 0 ? 'eager' : 'lazy';
+    if (itemIndex === 0) image.fetchPriority = 'high';
     image.decoding = 'async';
     if (/hero-2|burim/.test(item.url)) slide.classList.add('is-portrait');
     slide.appendChild(image);
@@ -62,7 +63,7 @@ function carousel(images) {
 function render() {
   const page = content[clinicKey];
   const lang = getLang();
-  document.title = clinicKey === 'dent' ? 'Brilliant Dent' : 'Brilliant Aesthetic';
+  document.title = t(clinicKey === 'dent' ? 'metaDentTitle' : 'metaAesTitle');
   const primary = document.querySelector('.hero-actions .btn-gold');
   primary.dataset.i18n = clinicKey === 'aesthetic' ? 'exploreAes' : 'exploreDent';
   document.querySelector('[name="preferredDate"]').min = new Date().toISOString().slice(0, 10);
@@ -98,6 +99,7 @@ function render() {
       const image = el('img');
       image.src = doctor.photo;
       image.alt = doctor.fullName;
+      image.loading = 'lazy';
       photo.appendChild(image);
     } else photo.appendChild(el('div', 'monogram', initials(doctor.fullName)));
     const body = el('div', 'doctor-body');
@@ -115,10 +117,12 @@ function render() {
     const box = el('div', 'ba reveal');
     const after = el('img');
     after.src = pair.afterUrl;
-    after.alt = tx(pair.caption) || 'After';
+    after.alt = tx(pair.caption) || t('after');
+    after.loading = 'lazy';
     const before = el('img', 'before');
     before.src = pair.beforeUrl;
-    before.alt = 'Before';
+    before.alt = t('before');
+    before.loading = 'lazy';
     const range = document.createElement('input');
     range.type = 'range';
     range.min = '0';
@@ -156,7 +160,7 @@ function render() {
     } else {
       const image = el('img');
       image.src = item.url;
-      image.alt = caption;
+      image.alt = caption || t('altGallery');
       image.loading = 'lazy';
       image.decoding = 'async';
       button.appendChild(image);
@@ -169,7 +173,7 @@ function render() {
 
   const aboutImg = document.querySelector('#aboutImg');
   const shot = page.gallery.find((item) => item.mediaType === 'image');
-  if (shot) { aboutImg.src = shot.url; aboutImg.alt = tx(shot.caption); aboutImg.loading = 'lazy'; aboutImg.decoding = 'async'; }
+  if (shot) { aboutImg.src = shot.url; aboutImg.alt = tx(shot.caption) || t('altAbout'); aboutImg.loading = 'lazy'; aboutImg.decoding = 'async'; }
   document.querySelector('#puna').hidden = page.beforeAfter.length === 0;
 
   const pick = document.querySelector('#clinicPick');
@@ -398,6 +402,6 @@ document.querySelector('#form').addEventListener('submit', async (event) => {
 });
 
 bindLang(() => render());
-loadContent().then((data) => { content = data; render(); }).catch(() => {
+window.bdaI18n.then(() => loadContent().then((data) => { content = data; render(); }).catch(() => {
   document.querySelector('[data-bind="hero"]').textContent = 'Brilliant Dent';
-});
+}));
