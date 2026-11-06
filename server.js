@@ -175,7 +175,8 @@ function shapeGallery(row) {
     mediaType: row.media_type,
     url: row.url,
     caption: row.caption || {},
-    sortOrder: row.sort_order
+    sortOrder: row.sort_order,
+    visible: row.visible !== false
   };
 }
 
@@ -277,7 +278,9 @@ function present(bundle, { includeHidden = false } = {}) {
           description: item.description || {},
           sortOrder: item.sort_order
         })),
-      gallery: bundle.gallery.filter((item) => item.clinic === slug).map(shapeGallery),
+      gallery: bundle.gallery
+        .filter((item) => item.clinic === slug && (includeHidden || item.visible !== false))
+        .map(shapeGallery),
       beforeAfter: bundle.pairs.filter((item) => item.clinic === slug).map(shapePair),
       doctors: doctors.filter((doctor) => (doctor.clinics || []).includes(slug)),
       testimonials: testimonials.filter((item) => item.clinic === slug),
@@ -818,9 +821,27 @@ app.put('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
   const patch = {};
   if (req.body.caption) patch.caption = asObject(req.body.caption);
   if (req.body.sortOrder != null) patch.sort_order = Number(req.body.sortOrder) || 0;
+  if (typeof req.body.visible === 'boolean') patch.visible = req.body.visible;
   const { error } = await req.sb.from('gallery_items').update(patch).eq('id', req.params.id);
   if (error) return res.status(400).json({ error: error.message });
   res.json({ ok: true });
+});
+
+app.post('/api/admin/gallery/:id/file', requireAdmin, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'Zgjidhni një foto ose video.' });
+    const existing = await req.sb.from('gallery_items').select('url, clinic').eq('id', req.params.id).maybeSingle();
+    if (!existing.data) return res.status(404).json({ error: 'Nuk u gjet.' });
+    const mediaType = /^video\//.test(req.file.mimetype) ? 'video' : 'image';
+    const url = await storeFile(req.sb, bucketFor(existing.data.clinic), req.file);
+    await removeStored(req.sb, existing.data.url);
+    const { error } = await req.sb.from('gallery_items').update({ url, media_type: mediaType }).eq('id', req.params.id);
+    if (error) throw error;
+    res.json({ url, mediaType });
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 400).json({ error: err.message || 'Zëvendësimi dështoi.' });
+  }
 });
 
 app.post('/api/admin/gallery-order', requireAdmin, async (req, res) => {

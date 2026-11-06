@@ -23,15 +23,30 @@ function carousel(images) {
   const slides = [];
   images.forEach((item, itemIndex) => {
     const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
-    const image = el('img');
-    image.src = item.url === '/media/dent/hero-1.webp' ? `${item.url}?v=3` : item.url;
-    image.alt = tx(item.caption) || t(clinicKey === 'aesthetic' ? 'altAesHero' : 'altDentHero');
-    image.loading = itemIndex === 0 ? 'eager' : 'lazy';
-    if (itemIndex === 0) image.fetchPriority = 'high';
-    image.decoding = 'async';
-    image.style.objectPosition = clinicKey === 'dent' && itemIndex === 0 ? 'center 18%' : 'center center';
-    if (item.fit === 'contain') slide.classList.add('is-poster');
-    slide.appendChild(image);
+    const note = tx(item.caption);
+    if (item.mediaType === 'video') {
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = itemIndex === 0 ? 'auto' : 'metadata';
+      if (itemIndex === 0) video.autoplay = true;
+      slide.appendChild(video);
+    } else {
+      const image = el('img');
+      image.src = item.url === '/media/dent/hero-1.webp' ? `${item.url}?v=3` : item.url;
+      image.alt = note || t(clinicKey === 'aesthetic' ? 'altAesHero' : 'altDentHero');
+      image.loading = itemIndex === 0 ? 'eager' : 'lazy';
+      if (itemIndex === 0) image.fetchPriority = 'high';
+      image.decoding = 'async';
+      image.style.objectPosition = clinicKey === 'dent' && /hero-1\.webp/.test(item.url) ? 'center 18%' : 'center center';
+      image.addEventListener('load', () => {
+        if (image.naturalHeight > image.naturalWidth * 1.05) slide.classList.add('is-poster');
+      });
+      slide.appendChild(image);
+    }
+    if (note) slide.appendChild(el('p', 'slide-note', note));
     media.appendChild(slide);
     slides.push(slide);
     const dot = el('button');
@@ -47,6 +62,12 @@ function carousel(images) {
     dots.children[index].classList.remove('is-on');
     index = (next + slides.length) % slides.length;
     slides[index].classList.add('is-on');
+    slides.forEach((node) => {
+      const video = node.querySelector('video');
+      if (!video) return;
+      if (node === slides[index]) video.play().catch(() => {});
+      else video.pause();
+    });
     const dot = dots.children[index];
     dot.classList.remove('is-on');
     void dot.offsetWidth;
@@ -187,19 +208,7 @@ function render() {
   document.querySelector('[data-bind="sub"]').textContent = tx(page.heroSubtitle);
   document.querySelector('[data-bind="aboutTitle"]').textContent = tx(page.aboutTitle);
   document.querySelector('[data-bind="aboutBody"]').textContent = tx(page.aboutBody);
-  const heroes = page.gallery.filter((item) => item.placement === 'hero' && item.mediaType === 'image');
-  if (clinicKey === 'aesthetic') {
-    heroes.unshift({
-      url: '/media/aes/hero-prx.webp',
-      fit: 'contain',
-      caption: {
-        sq: 'PRX-T33, Brilliant Aesthetic Clinic',
-        en: 'PRX-T33, Brilliant Aesthetic Clinic',
-        de: 'PRX-T33, Brilliant Aesthetic Clinic',
-        fr: 'PRX-T33, Brilliant Aesthetic Clinic'
-      }
-    });
-  }
+  const heroes = page.gallery.filter((item) => item.placement === 'hero' && (item.mediaType === 'image' || item.mediaType === 'video'));
   carousel(heroes);
 
   const services = document.querySelector('#services');
@@ -269,7 +278,7 @@ function render() {
   if (page.heroVideoUrl) gallery.appendChild(mountEmbed(page.heroVideoUrl));
   const slides = [];
   const masonry = el('div', 'gallery-masonry');
-  page.gallery.filter((item) => item.placement !== 'hero' || item.mediaType !== 'image').forEach((item) => {
+  page.gallery.filter((item) => item.placement !== 'hero').forEach((item) => {
     if (item.mediaType === 'tiktok' || item.mediaType === 'instagram') {
       gallery.appendChild(mountEmbed(item.url));
       return;

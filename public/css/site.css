@@ -145,6 +145,13 @@ body.has-hero[data-theme="aesthetic"] .nav {
 .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.15s ease; }
 .slide.is-on { opacity: 1; }
 .slide img, .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; transform: none; }
+.slide video { width: 100%; height: 100%; object-fit: cover; }
+.slide-note {
+  position: absolute; left: 50%; bottom: 4.4rem; transform: translateX(-50%);
+  max-width: min(36rem, calc(100% - 2rem)); margin: 0; padding: 0.35rem 0.75rem;
+  border-radius: 8px; background: rgba(7, 20, 34, .78); color: #fff;
+  font-size: 0.92rem; line-height: 1.35; text-align: center; z-index: 1;
+}
 .slide.is-poster { background: #f7eef2; }
 .slide.is-poster img {
   object-fit: contain;
@@ -422,6 +429,15 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
 .staff-row, .edit-card { border: 1px solid #eee; border-radius: 14px; padding: 0.8rem; margin: 0.6rem 0; display: grid; gap: 0.55rem; }
 .staff-row { grid-template-columns: 64px 1fr auto; align-items: center; }
 .staff-row img, .ph { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #f0ebe3; }
+.photo-preview, .crop-frame { width: 180px; height: 225px; border-radius: 14px; overflow: hidden; background: #ece6dc; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.photo-preview .monogram { height: 100%; }
+.crop-box { display: grid; gap: 0.45rem; justify-items: start; margin-top: 0.6rem; }
+.crop-frame { position: relative; touch-action: none; cursor: grab; background: #111; }
+.crop-frame img { position: absolute; max-width: none; }
+.admin-thumb { width: 180px; height: 108px; object-fit: cover; border-radius: 10px; display: block; background: #111; }
+.hero-admin { border: 1px solid #eee; border-radius: 14px; padding: 0.8rem; margin: 0.7rem 0; display: grid; gap: 0.45rem; }
+.hero-admin.is-off { opacity: 0.5; }
 .row-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .lang-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 .muted { color: #6d6258; font-size: 0.9rem; }
