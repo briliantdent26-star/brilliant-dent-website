@@ -4,28 +4,59 @@ document.body.dataset.clinic = clinicKey;
 
 let content;
 
+let heroTimer;
+
 function carousel(images) {
+  clearInterval(heroTimer);
   const media = document.querySelector('.hero-media');
+  const controls = document.querySelector('.hero-controls');
+  const dots = document.querySelector('.hero-dots');
   media.replaceChildren();
-  if (!images.length) return;
-  images.forEach((item, index) => {
-    const slide = el('div', `slide${index === 0 ? ' is-on' : ''}`);
+  dots.replaceChildren();
+  if (!images.length) {
+    controls.hidden = true;
+    return;
+  }
+  let index = 0;
+  const slides = [];
+  images.forEach((item, itemIndex) => {
+    const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
     const image = el('img');
     image.src = item.url;
-    image.alt = tx(item.caption) || 'Brilliant Dent';
-    image.loading = index === 0 ? 'eager' : 'lazy';
+    image.alt = tx(item.caption) || (clinicKey === 'aesthetic' ? 'Brilliant Aesthetic' : 'Brilliant Dent');
+    image.loading = itemIndex === 0 ? 'eager' : 'lazy';
     image.decoding = 'async';
+    if (/hero-2|burim/.test(item.url)) slide.classList.add('is-portrait');
     slide.appendChild(image);
     media.appendChild(slide);
+    slides.push(slide);
+    const dot = el('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', String(itemIndex + 1));
+    if (itemIndex === 0) dot.classList.add('is-on');
+    dot.addEventListener('click', () => show(itemIndex));
+    dots.appendChild(dot);
   });
-  if (images.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let index = 0;
-  setInterval(() => {
-    const slides = [...media.querySelectorAll('.slide')];
+  controls.hidden = images.length < 2;
+  function show(next) {
     slides[index].classList.remove('is-on');
-    index = (index + 1) % slides.length;
+    dots.children[index].classList.remove('is-on');
+    index = (next + slides.length) % slides.length;
     slides[index].classList.add('is-on');
-  }, 5600);
+    const dot = dots.children[index];
+    dot.classList.remove('is-on');
+    void dot.offsetWidth;
+    dot.classList.add('is-on');
+    arm();
+  }
+  function arm() {
+    clearInterval(heroTimer);
+    if (images.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    heroTimer = setInterval(() => show(index + 1), 6400);
+  }
+  controls.querySelector('.prev').onclick = () => show(index - 1);
+  controls.querySelector('.next').onclick = () => show(index + 1);
+  arm();
 }
 
 function render() {

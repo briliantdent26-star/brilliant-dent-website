@@ -32,3 +32,4 @@
 - origin është https://github.com/briliantdent26-star/brilliant-dent-website.git. Hyrja si briliantdent26-star u pranua dhe main u dërgua. .env nuk u commit-ua.
 - Railway projekti brave-dream, shërbimi exciting-enthusiasm, është i lidhur me GitHub main. Domeni tani shkon te porta 8080. Fotot mungonin sepse /api/content dështonte: çelësi Supabase mungonte, pastaj Node 20 s’ka WebSocket. Çelësi u vendos dhe Node u caktua 22.
 - Shërbimet dhe stafi krijoheshin me klasën reveal pas animacionit, prandaj mbeteshin të padukshëm. Tani vëzhgohen pasi të vizatohen.
+- Hero slider: mbulesa e errët dhe kutia lejla u hoqën. Ngjyra është ar për stomatologjinë dhe rozë e ngrohtë për estetikën, me pika dhe shigjeta. Fotot e LYKENS dhe fasada me tekst të ngjitur u zëvendësuan. Fotoja e vërtetë e recepsionit me Dr. Burimin mbeti.
