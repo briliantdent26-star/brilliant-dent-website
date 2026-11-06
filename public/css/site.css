@@ -223,7 +223,9 @@ html.motion .slide.is-on img { animation: none; }
 .icon-row a:hover { background: var(--navy); color: white; }
 
 .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; align-items: center; }
-.about-grid img { width: 100%; height: 460px; object-fit: cover; border-radius: 18px; }
+.about-grid img, .about-photos { width: 100%; height: 460px; object-fit: cover; border-radius: 18px; }
+.about-photos { position: relative; overflow: hidden; background: #efe8df; }
+.about-photos .slide img { border-radius: 0; height: 100%; }
 .ba-list, .profile-work { display: grid; gap: 1.4rem; }
 .ba { position: relative; border-radius: 18px; overflow: hidden; background: #ddd; user-select: none; }
 .ba img { width: 100%; height: min(68vh, 560px); object-fit: cover; }
@@ -480,7 +482,7 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
   .home-bar.solid .langs button { color: var(--ink); border-color: var(--line); background: transparent; }
   .home-bar.solid .langs button[aria-pressed="true"] { background: var(--navy); color: white; border-color: var(--navy); }
   .lang-grid { grid-template-columns: 1fr; }
-  .profile-photo img, .about-grid img, .ba img { height: 360px; }
+  .profile-photo img, .about-grid img, .about-photos, .ba img { height: 360px; }
   .profile-photo img { height: 460px; }
   .staff-row { grid-template-columns: 64px 1fr; }
   .footer { padding-bottom: 5.6rem; }

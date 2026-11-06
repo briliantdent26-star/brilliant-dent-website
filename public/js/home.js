@@ -17,7 +17,7 @@ function paint(data) {
   const aes = data.aesthetic.gallery.find((item) => item.placement === 'hero' && item.mediaType === 'image') || data.aesthetic.gallery.find((item) => item.mediaType === 'image');
   const dentImg = document.querySelector('#doorDent');
   const aesImg = document.querySelector('#doorAes');
-  if (dent) { dentImg.src = dent.url; dentImg.alt = tx(dent.caption) || t('altDoorDent'); }
+  if (dent) { dentImg.src = dent.url === '/media/dent/hero-1.webp' ? `${dent.url}?v=3` : dent.url; dentImg.alt = tx(dent.caption) || t('altDoorDent'); }
   if (aes) { aesImg.src = aes.url; aesImg.alt = tx(aes.caption) || t('altDoorAes'); }
   document.querySelector('#story').textContent = t('story');
   document.querySelector('#learn').textContent = t('learn');

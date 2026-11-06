@@ -50,4 +50,4 @@
 - Në sliderin e stomatologjisë, me radhë: fasada, kabineti i trajtimit, hapësira e pritjes. Fotot e mëparshme të atij slideri u zëvendësuan.
 - Në telefon fotoja zë gjerësinë e ekranit dhe butonat qëndrojnë poshtë tekstit, pa u mbuluar nga WhatsApp. Në ekran të gjerë fotoja dhe shiriti hyjnë në një ekran.
 - Fotoja e dytë është salla e mbledhjes. Të tria fotot mbushin kutinë, pa vija të zeza anash dhe pa fletë mbi foto.
-- Fotoja e Dr. Burimit te stafi është portreti me uniformë blu. Mes shërbimeve dhe stafit, te stomatologjia, lëviz një slider me pesë foto të brendshme. Te estetika, heroja fillon me posterin PRX-T33.
+- Fotoja e parë e stomatologjisë është e njëjta fasadë e mprehtë si te estetika, me tekstin e stomatologjisë. Poshtë stafit, te «Kujdes i qetë», fotot e brendshme të pastra zëvendësojnë foton e turbullt.

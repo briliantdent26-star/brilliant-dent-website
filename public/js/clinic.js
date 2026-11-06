@@ -6,6 +6,7 @@ let content;
 
 let heroTimer;
 let roomTimer;
+let aboutTimer;
 
 function carousel(images) {
   clearInterval(heroTimer);
@@ -23,7 +24,7 @@ function carousel(images) {
   images.forEach((item, itemIndex) => {
     const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
     const image = el('img');
-    image.src = item.url;
+    image.src = item.url === '/media/dent/hero-1.webp' ? `${item.url}?v=3` : item.url;
     image.alt = tx(item.caption) || t(clinicKey === 'aesthetic' ? 'altAesHero' : 'altDentHero');
     image.loading = itemIndex === 0 ? 'eager' : 'lazy';
     if (itemIndex === 0) image.fetchPriority = 'high';
@@ -129,6 +130,48 @@ function roomShow() {
   }
   prev.onclick = () => show(index - 1);
   next.onclick = () => show(index + 1);
+  arm();
+}
+
+function aboutPhotos(page) {
+  clearInterval(aboutTimer);
+  const frame = document.querySelector('#aboutPhotos');
+  if (!frame) return;
+  const lang = getLang();
+  const clean = clinicKey === 'dent'
+    ? [
+        ['/media/dent/room-2.webp', { sq: 'Recepsioni', en: 'Reception', de: 'Empfang', fr: 'Réception' }],
+        ['/media/dent/room-3.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
+        ['/media/dent/room-4.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
+        ['/media/dent/room-5.webp', { sq: 'Hyrja e kabinetit', en: 'Treatment room entrance', de: 'Eingang zum Behandlungsraum', fr: 'Entrée du cabinet' }],
+        ['/media/dent/room-1.webp', { sq: 'Kabineti i estetikës', en: 'Aesthetic treatment room', de: 'Ästhetik-Behandlungsraum', fr: 'Salle de soin esthétique' }]
+      ]
+    : page.gallery.filter((item) => item.mediaType === 'image' && item.placement === 'hero').slice(0, 2).map((item) => [item.url, item.caption]);
+  frame.replaceChildren();
+  if (!clean.length) return;
+  let index = 0;
+  const slides = clean.map(([url, caption], itemIndex) => {
+    const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
+    const image = el('img');
+    image.src = url;
+    image.alt = (caption && (caption[lang] || caption.sq)) || t('altAbout');
+    image.decoding = 'async';
+    slide.appendChild(image);
+    frame.appendChild(slide);
+    return slide;
+  });
+  if (slides.length < 2) return;
+  function show(nextIndex) {
+    slides[index].classList.remove('is-on');
+    index = (nextIndex + slides.length) % slides.length;
+    slides[index].classList.add('is-on');
+    arm();
+  }
+  function arm() {
+    clearInterval(aboutTimer);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    aboutTimer = setInterval(() => show(index + 1), 3800);
+  }
   arm();
 }
 
@@ -257,9 +300,7 @@ function render() {
   });
   if (masonry.children.length) gallery.appendChild(masonry);
 
-  const aboutImg = document.querySelector('#aboutImg');
-  const shot = page.gallery.find((item) => item.mediaType === 'image');
-  if (shot) { aboutImg.src = shot.url; aboutImg.alt = tx(shot.caption) || t('altAbout'); aboutImg.loading = 'lazy'; aboutImg.decoding = 'async'; }
+  aboutPhotos(page);
   document.querySelector('#puna').hidden = page.beforeAfter.length === 0;
 
   const pick = document.querySelector('#clinicPick');
