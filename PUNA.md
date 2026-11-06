@@ -30,4 +30,4 @@
 
 - origin u ndërrua te https://github.com/briliantdent/brilliant-dent-website.git
 - origin është https://github.com/briliantdent26-star/brilliant-dent-website.git. Hyrja si briliantdent26-star u pranua dhe main u dërgua. .env nuk u commit-ua.
-- Railway projekti brave-dream, shërbimi exciting-enthusiasm, është i lidhur me GitHub main. briliantdent.com kthente 502 sepse procesi dëgjonte pa 0.0.0.0. server.js tani dëgjon në 0.0.0.0.
+- Railway projekti brave-dream, shërbimi exciting-enthusiasm, është i lidhur me GitHub main. Domeni tani shkon te porta 8080. Fotot mungonin sepse /api/content dështonte: çelësi Supabase mungonte, pastaj Node 20 s’ka WebSocket. Çelësi u vendos dhe Node u caktua 22.
