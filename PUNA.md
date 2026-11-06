@@ -29,4 +29,5 @@
 ## 2026-11-06 — Remote git
 
 - origin u ndërrua te https://github.com/briliantdent/brilliant-dent-website.git
-- Commit lokal f2d6a46. Push dështoi: GitHub kthen “repository not found”. Llogaria briliantdent nuk ekziston ende. .env nuk u commit-ua.
+- origin është https://github.com/briliantdent26-star/brilliant-dent-website.git. Hyrja si briliantdent26-star u pranua dhe main u dërgua. .env nuk u commit-ua.
+- Railway projekti brave-dream, shërbimi exciting-enthusiasm, është i lidhur me GitHub main. briliantdent.com kthente 502 sepse procesi dëgjonte pa 0.0.0.0. server.js tani dëgjon në 0.0.0.0.

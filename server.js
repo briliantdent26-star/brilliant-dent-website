@@ -942,6 +942,6 @@ app.get('/doktori/:slug', page('doctor.html'));
 app.get('/admin', page('admin.html'));
 app.use(express.static(publicDir));
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Brilliant Dent listening on ${PORT}`);
 });
