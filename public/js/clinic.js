@@ -194,6 +194,7 @@ function render() {
   document.querySelector('#year').textContent = String(new Date().getFullYear());
   document.querySelector('#reviewClinic').textContent = `${t('yourClinic')}: ${clinicKey === 'aesthetic' ? 'Brilliant Aesthetic' : 'Brilliant Dent'}`;
   applyI18n();
+  document.querySelectorAll('.reveal').forEach((node) => window.bdaObserve?.(node));
 }
 
 function timeSlots() {
