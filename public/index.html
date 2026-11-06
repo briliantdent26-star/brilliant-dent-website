@@ -1,30 +1,57 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html class="motion" lang="sq">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Brilliant Dent · Aesthetic Clinic</title>
   <link rel="icon" href="/favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Newsreader:opsz,wght@6..72,500&family=Outfit:wght@360;520&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="/css/site.css">
 </head>
-<body>
-  <div class="home-bar">
-    <a class="brand" href="/"><span class="mark">B</span><span><b>BRILLIANT</b><small id="slogan"></small></span></a>
+<body class="home">
+  <header class="home-bar">
+    <a class="brand" href="/"><span class="mark">B</span><span><b>BRILLIANT</b><small>Dent · Aesthetic</small></span></a>
+    <nav class="home-links">
+      <a href="/dent" data-i18n="dent"></a>
+      <a href="/estetike" data-i18n="aes"></a>
+      <a href="#rreth" data-i18n="about"></a>
+    </nav>
     <span class="langs"><button type="button" data-lang="sq">SQ</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="de">DE</button></span>
-  </div>
-  <main class="doors">
-    <a class="door door-dent" href="/dent">
-      <img id="doorDent" alt="Brilliant Dent">
-      <span class="veil"></span>
-      <span class="door-copy"><p class="kicker">Dental Clinic</p><h1>Brilliant Dent</h1><p data-i18n="enter"></p></span>
-    </a>
-    <a class="door door-aes" href="/estetike">
-      <img id="doorAes" alt="Brilliant Aesthetic">
-      <span class="veil"></span>
-      <span class="door-copy"><p class="kicker">Aesthetic Clinic</p><h1>Brilliant Aesthetic</h1><p data-i18n="enter"></p></span>
-    </a>
+  </header>
+  <main>
+    <section class="doors" id="ballina">
+      <a class="door door-dent" href="/dent">
+        <img id="doorDent" alt="Brilliant Dent" data-parallax="1">
+        <span class="veil"></span>
+        <span class="door-copy"><p class="kicker">Dental Clinic</p><h1>Brilliant Dent</h1><p data-i18n="enter"></p></span>
+      </a>
+      <a class="door door-aes" href="/estetike">
+        <img id="doorAes" alt="Brilliant Aesthetic" data-parallax="1">
+        <span class="veil"></span>
+        <span class="door-copy"><p class="kicker">Aesthetic Clinic</p><h1>Brilliant Aesthetic</h1><p data-i18n="enter"></p></span>
+      </a>
+    </section>
+    <section class="section about-home" id="rreth">
+      <div class="wrap">
+        <p class="kicker reveal" data-i18n="about"></p>
+        <h2 class="reveal" data-i18n="aboutTitle"></h2>
+        <p class="lede story reveal" id="story"></p>
+        <div class="stats" id="stats"></div>
+        <h3 class="reveal" data-i18n="equipTitle"></h3>
+        <div class="equip" id="equip"></div>
+        <p class="lede learn reveal" id="learn"></p>
+        <div class="bio-grid" id="bios"></div>
+      </div>
+    </section>
   </main>
+  <footer class="footer">
+    <div class="wrap footer-row">
+      <span>© <span id="year"></span> Brilliant Dent · Aesthetic Clinic</span>
+      <span>Rruga Riza Goga, 94, Ferizaj</span>
+    </div>
+  </footer>
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
 </body>

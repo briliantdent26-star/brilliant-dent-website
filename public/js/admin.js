@@ -288,14 +288,17 @@ function drawClinic(slug) {
   file.type = 'file'; file.name = 'file'; file.accept = 'image/*,video/mp4,video/webm'; file.required = true;
   const place = document.createElement('select');
   place.name = 'placement';
-  place.innerHTML = '<option value="hero">Karuseli kryesor</option><option value="gallery">Galeria</option>';
+  place.innerHTML = '<option value="gallery">Galeria</option><option value="hero">Karuseli kryesor</option>';
+  const caption = document.createElement('input');
+  caption.placeholder = 'Përshkrimi i fotos ose videos';
   const go = document.createElement('button');
   go.className = 'tiny'; go.type = 'submit'; go.textContent = 'Ngarko';
-  upload.append(file, place, go);
+  upload.append(file, place, caption, go);
   upload.addEventListener('submit', async (event) => {
     event.preventDefault();
     const body = new FormData(upload);
     body.append('clinic', slug);
+    body.append('caption', JSON.stringify({ sq: caption.value, en: caption.value, de: caption.value }));
     await api('/api/admin/gallery', { method: 'POST', body });
     await refresh();
   });
@@ -313,8 +316,32 @@ function drawClinic(slug) {
     await refresh();
   }));
   root.appendChild(embed);
-  clinic.gallery.forEach((item) => {
+  const galleryItems = clinic.gallery.filter((item) => item.placement === 'gallery');
+  galleryItems.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'edit-card';
+    card.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: `${item.mediaType} · galeria` }));
+    card.append(langs(item.caption || {}, (lang, value) => { item.caption = { ...(item.caption || {}), [lang]: value }; }, false));
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+    actions.append(
+      button('Ruaj përshkrimin', async () => {
+        await api(`/api/admin/gallery/${item.id}`, { method: 'PUT', body: { caption: item.caption } });
+        alert('U ruajt.');
+      }),
+      button('↑', () => moveGallery(galleryItems, index, -1)),
+      button('↓', () => moveGallery(galleryItems, index, 1)),
+      button('Fshi', async () => {
+        await api(`/api/admin/gallery/${item.id}`, { method: 'DELETE' });
+        await refresh();
+      })
+    );
+    card.appendChild(actions);
+    root.appendChild(card);
+  });
+  clinic.gallery.filter((item) => item.placement !== 'gallery').forEach((item) => {
     const line = document.createElement('div');
+    line.className = 'edit-card';
     line.textContent = `${item.placement} · ${item.mediaType}`;
     line.append(button('Fshi', async () => {
       await api(`/api/admin/gallery/${item.id}`, { method: 'DELETE' });
@@ -361,6 +388,14 @@ function drawClinic(slug) {
   }));
 }
 
+async function moveGallery(items, index, direction) {
+  const next = index + direction;
+  if (next < 0 || next >= items.length) return;
+  const ids = items.map((item) => item.id);
+  [ids[index], ids[next]] = [ids[next], ids[index]];
+  await api('/api/admin/gallery-order', { method: 'POST', body: { ids } });
+  await refresh();
+}
 function drawContact() {
   const contact = data.contact;
   const root = panelEl();
@@ -368,37 +403,144 @@ function drawContact() {
   form.className = 'edit-card';
   form.append(Object.assign(document.createElement('h2'), { textContent: 'Kontakti' }));
   form.append(langs(contact.address, (lang, value) => { contact.address = { ...contact.address, [lang]: value }; }));
-  const phone = Object.assign(document.createElement('input'), { value: contact.phone || '' });
-  const phone2 = Object.assign(document.createElement('input'), { value: contact.phoneSecondary || '' });
-  const email = Object.assign(document.createElement('input'), { value: contact.email || '' });
-  form.append(phone, phone2, email);
+  const phone = Object.assign(document.createElement('input'), { value: contact.phone || '', placeholder: 'Telefoni' });
+  const phone2 = Object.assign(document.createElement('input'), { value: contact.phoneSecondary || '', placeholder: 'Telefoni 2' });
+  const email = Object.assign(document.createElement('input'), { value: contact.email || '', placeholder: 'Email' });
+  const whatsapp = Object.assign(document.createElement('input'), { value: contact.whatsapp || '', placeholder: 'WhatsApp, p.sh. +383 44 654 129' });
+  form.append(phone, phone2, email, whatsapp);
   const save = document.createElement('button');
   save.className = 'btn btn-navy'; save.textContent = 'Ruaj'; save.type = 'submit';
   form.append(save);
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    await api('/api/admin/contact', { method: 'PUT', body: { ...contact, phone: phone.value, phoneSecondary: phone2.value, email: email.value } });
+    await api('/api/admin/contact', { method: 'PUT', body: { ...contact, phone: phone.value, phoneSecondary: phone2.value, email: email.value, whatsapp: whatsapp.value } });
     alert('U ruajt.');
   });
   root.replaceChildren(form);
 }
 function drawAppointments() {
+  const labels = { new: 'e re', confirmed: 'e konfirmuar', cancelled: 'e anuluar', contacted: 'e kontaktuar', closed: 'e mbyllur' };
+  const clinics = { dent: 'Stomatologji', aesthetic: 'Estetikë' };
   const root = panelEl();
   root.replaceChildren(Object.assign(document.createElement('h2'), { textContent: 'Terminet' }));
+  if (!(data.appointments || []).length) root.append(Object.assign(document.createElement('p'), { textContent: 'Nuk ka termine.' }));
   (data.appointments || []).forEach((item) => {
     const row = document.createElement('div');
     row.className = 'edit-card';
-    row.textContent = `${item.preferred_date} · ${item.full_name} · ${item.phone} · ${item.clinic} · ${item.service_name || ''} · ${item.doctor_name || ''}`;
-    const status = document.createElement('select');
-    ['new', 'contacted', 'closed'].forEach((value) => status.append(new Option(value, value)));
-    status.value = item.status;
-    status.addEventListener('change', () => api(`/api/admin/appointments/${item.id}`, { method: 'PATCH', body: { status: status.value } }));
-    row.append(status, button('Fshi', async () => {
-      await api(`/api/admin/appointments/${item.id}`, { method: 'DELETE' });
-      await refresh();
-    }));
+    const title = document.createElement('strong');
+    title.textContent = `${item.full_name} · ${labels[item.status] || item.status}`;
+    const detail = document.createElement('p');
+    detail.className = 'muted';
+    detail.textContent = `${item.preferred_date || ''} ${item.preferred_time || ''} · ${clinics[item.clinic] || item.clinic} · ${item.doctor_name || ''} · ${item.service_name || ''}`;
+    const contact = document.createElement('p');
+    contact.textContent = `${item.phone || ''} · ${item.email || ''}${item.message ? ` · ${item.message}` : ''}`;
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+    actions.append(
+      button('Konfirmo', async () => {
+        await api(`/api/admin/appointments/${item.id}`, { method: 'PATCH', body: { status: 'confirmed' } });
+        await refresh();
+      }),
+      button('Anulo', async () => {
+        await api(`/api/admin/appointments/${item.id}`, { method: 'PATCH', body: { status: 'cancelled' } });
+        await refresh();
+      }),
+      button('Fshi', async () => {
+        await api(`/api/admin/appointments/${item.id}`, { method: 'DELETE' });
+        await refresh();
+      })
+    );
+    row.append(title, detail, contact, actions);
     root.appendChild(row);
   });
+}
+let editingReview = null;
+function blankReview() {
+  return { clinic: 'dent', patientName: '', anonymous: false, rating: 5, body: { sq: '', en: '', de: '' }, reviewDate: '', visible: true };
+}
+function drawTestimonials() {
+  const root = panelEl();
+  root.replaceChildren(Object.assign(document.createElement('h2'), { textContent: 'Vlerësimet' }));
+  root.append(button('Shto vlerësim', () => { editingReview = blankReview(); draw(); }));
+  const statusLabel = { pending: 'në pritje', approved: 'i aprovuar', rejected: 'i refuzuar' };
+  const reviews = [...(data.testimonials || [])].sort((a, b) => (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1));
+  reviews.forEach((item) => {
+    const row = document.createElement('div');
+    row.className = 'edit-card';
+    const title = document.createElement('strong');
+    title.textContent = `${item.anonymous ? 'Anonim' : item.patientName} · ${item.clinic === 'aesthetic' ? 'Estetikë' : 'Stomatologji'} · ${item.rating}/5 · ${statusLabel[item.status] || item.status}`;
+    const text = document.createElement('p');
+    text.textContent = item.body?.sq || '';
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+    const saveStatus = async (status) => {
+      await api(`/api/admin/testimonials/${item.id}`, {
+        method: 'PUT',
+        body: {
+          clinic: item.clinic, patientName: item.patientName, anonymous: item.anonymous,
+          rating: item.rating, body: item.body, reviewDate: item.reviewDate, status, visible: status === 'approved'
+        }
+      });
+      await refresh();
+    };
+    actions.append(
+      button('Aprovo', () => saveStatus('approved')),
+      button('Refuzo', () => saveStatus('rejected')),
+      button('Ndrysho', () => { editingReview = structuredClone(item); draw(); }),
+      button('Fshi', async () => {
+        await api(`/api/admin/testimonials/${item.id}`, { method: 'DELETE' });
+        editingReview = null;
+        await refresh();
+      })
+    );
+    row.append(title, text, actions);
+    root.appendChild(row);
+  });
+  if (!editingReview) return;
+  const review = editingReview;
+  const form = document.createElement('form');
+  form.className = 'edit-card';
+  const clinic = document.createElement('select');
+  clinic.append(new Option('Stomatologji', 'dent'), new Option('Estetikë', 'aesthetic'));
+  clinic.value = review.clinic === 'aesthetic' ? 'aesthetic' : 'dent';
+  const name = Object.assign(document.createElement('input'), { value: review.patientName || '', placeholder: 'Emri i pacientit' });
+  const anonymous = document.createElement('input');
+  anonymous.type = 'checkbox';
+  anonymous.checked = review.anonymous === true;
+  const anonLabel = document.createElement('label');
+  anonLabel.append(anonymous, document.createTextNode(' Anonim'));
+  const rating = document.createElement('select');
+  [5, 4, 3, 2, 1].forEach((value) => rating.append(new Option(`${value} yje`, String(value))));
+  rating.value = String(review.rating || 5);
+  const date = Object.assign(document.createElement('input'), { type: 'date', value: review.reviewDate || '' });
+  const visible = document.createElement('input');
+  visible.type = 'checkbox';
+  visible.checked = review.visible !== false;
+  const visibleLabel = document.createElement('label');
+  visibleLabel.append(visible, document.createTextNode(' I dukshëm në faqe'));
+  const save = document.createElement('button');
+  save.className = 'btn btn-navy';
+  save.type = 'submit';
+  save.textContent = 'Ruaj';
+  form.append(clinic, name, anonLabel, rating, langs(review.body, (lang, value) => { review.body = { ...review.body, [lang]: value }; }), date, visibleLabel, save);
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const body = {
+      clinic: clinic.value,
+      patientName: name.value,
+      anonymous: anonymous.checked,
+      rating: Number(rating.value),
+      body: review.body,
+      reviewDate: date.value,
+      visible: visible.checked,
+      status: visible.checked ? 'approved' : 'rejected'
+    };
+    if (review.id) await api(`/api/admin/testimonials/${review.id}`, { method: 'PUT', body });
+    else await api('/api/admin/testimonials', { method: 'POST', body });
+    editingReview = null;
+    await refresh();
+  });
+  root.appendChild(form);
 }
 function drawPassword() {
   const form = document.createElement('form');
@@ -419,6 +561,7 @@ function draw() {
   else if (panel === 'dent' || panel === 'aesthetic') drawClinic(panel);
   else if (panel === 'contact') drawContact();
   else if (panel === 'appointments') drawAppointments();
+  else if (panel === 'testimonials') drawTestimonials();
   else drawPassword();
   document.querySelectorAll('.side button[data-panel]').forEach((button) => {
     button.setAttribute('aria-pressed', button.dataset.panel === panel ? 'true' : 'false');

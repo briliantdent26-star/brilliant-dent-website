@@ -13,6 +13,8 @@ function carousel(images) {
     const image = el('img');
     image.src = item.url;
     image.alt = tx(item.caption) || 'Brilliant Dent';
+    image.loading = index === 0 ? 'eager' : 'lazy';
+    image.decoding = 'async';
     slide.appendChild(image);
     media.appendChild(slide);
   });
@@ -44,7 +46,13 @@ function render() {
   services.replaceChildren();
   page.services.forEach((service, index) => {
     const card = el('article', 'service-card reveal');
-    card.append(el('div', 'num', String(index + 1).padStart(2, '0')), el('h3', '', tx(service.title)), el('p', '', tx(service.description)));
+    if (String(service.icon || '').includes('fa-')) {
+      const icon = document.createElement('i');
+      icon.className = service.icon;
+      icon.setAttribute('aria-hidden', 'true');
+      card.appendChild(icon);
+    } else card.appendChild(el('div', 'num', String(index + 1).padStart(2, '0')));
+    card.append(el('h3', '', tx(service.title)), el('p', '', tx(service.description)));
     services.appendChild(card);
   });
 
@@ -95,34 +103,51 @@ function render() {
   const gallery = document.querySelector('#gallery');
   gallery.replaceChildren();
   if (page.heroVideoUrl) gallery.appendChild(mountEmbed(page.heroVideoUrl));
+  const slides = [];
+  const masonry = el('div', 'gallery-masonry');
   page.gallery.filter((item) => item.placement !== 'hero' || item.mediaType !== 'image').forEach((item) => {
     if (item.mediaType === 'tiktok' || item.mediaType === 'instagram') {
       gallery.appendChild(mountEmbed(item.url));
       return;
     }
+    const caption = tx(item.caption);
+    const index = slides.length;
+    slides.push({ url: item.url, caption, mediaType: item.mediaType === 'video' ? 'video' : 'image' });
     const button = el('button', 'gallery-card');
+    button.type = 'button';
     if (item.mediaType === 'video') {
       const video = document.createElement('video');
       video.src = item.url;
-      video.controls = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
       button.appendChild(video);
     } else {
       const image = el('img');
       image.src = item.url;
-      image.alt = tx(item.caption);
+      image.alt = caption;
+      image.loading = 'lazy';
+      image.decoding = 'async';
       button.appendChild(image);
-      button.addEventListener('click', () => openLightbox(item.url, image.alt));
     }
-    gallery.appendChild(button);
+    if (caption) button.appendChild(el('span', 'cap', caption));
+    button.addEventListener('click', () => openLightbox(slides, index));
+    masonry.appendChild(button);
   });
+  if (masonry.children.length) gallery.appendChild(masonry);
 
   const aboutImg = document.querySelector('#aboutImg');
   const shot = page.gallery.find((item) => item.mediaType === 'image');
-  if (shot) { aboutImg.src = shot.url; aboutImg.alt = tx(shot.caption); }
+  if (shot) { aboutImg.src = shot.url; aboutImg.alt = tx(shot.caption); aboutImg.loading = 'lazy'; aboutImg.decoding = 'async'; }
+  document.querySelector('#puna').hidden = page.beforeAfter.length === 0;
 
-  const select = document.querySelector('#service');
-  select.replaceChildren(new Option(t('choose'), ''));
-  page.services.forEach((service) => select.append(new Option(tx(service.title), tx(service.title))));
+  const pick = document.querySelector('#clinicPick');
+  if (!pick.dataset.ready) {
+    pick.value = clinicKey;
+    pick.dataset.ready = '1';
+  }
+  fillBooking();
+  renderTestimonials();
 
   const contact = content.contact;
   document.querySelector('#address').textContent = tx(contact.address);
@@ -142,23 +167,176 @@ function render() {
     li.append(el('span', '', tx(row.days)), el('span', '', tx(row.time)));
     hours.appendChild(li);
   });
+  const mapQuery = 'Rruga Riza Goga, 94, Ferizaj, Kosovo';
   const map = document.querySelector('#map');
-  map.src = `https://maps.google.com/maps?q=${encodeURIComponent(contact.mapQuery || tx(contact.address))}&z=16&output=embed`;
+  map.src = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=16&output=embed`;
+  const directions = document.querySelector('#directions');
+  directions.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapQuery)}`;
 
   const social = document.querySelector('#footerSocial');
   social.replaceChildren();
+  const networkIcon = { instagram: 'fa-brands fa-instagram', facebook: 'fa-brands fa-facebook-f', tiktok: 'fa-brands fa-tiktok' };
   page.social.forEach((item) => {
-    const link = el('a');
+    const network = networkIcon[item.network] ? item.network : 'instagram';
+    const label = tx(item.label) || (network === 'facebook' ? 'Facebook' : network === 'tiktok' ? 'TikTok' : 'Instagram');
+    const link = el('a', `social-btn ${network}`);
     link.href = item.url;
     link.target = '_blank';
-    link.rel = 'noopener';
-    const icon = item.network === 'facebook' ? 'fa-brands fa-facebook-f' : item.network === 'tiktok' ? 'fa-brands fa-tiktok' : 'fa-brands fa-instagram';
-    link.innerHTML = `<i class="${icon}"></i> ${tx(item.label) || item.network}`;
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', label);
+    const icon = el('i', networkIcon[network]);
+    icon.setAttribute('aria-hidden', 'true');
+    const name = el('span');
+    name.textContent = label;
+    link.append(icon, name);
     social.appendChild(link);
   });
   document.querySelector('#year').textContent = String(new Date().getFullYear());
+  document.querySelector('#reviewClinic').textContent = `${t('yourClinic')}: ${clinicKey === 'aesthetic' ? 'Brilliant Aesthetic' : 'Brilliant Dent'}`;
   applyI18n();
 }
+
+function timeSlots() {
+  const slots = [];
+  for (let hour = 9; hour <= 19; hour += 1) {
+    const hh = String(hour).padStart(2, '0');
+    slots.push(`${hh}:00`, `${hh}:30`);
+  }
+  return slots;
+}
+function fillBooking() {
+  const clinic = document.querySelector('#clinicPick').value === 'aesthetic' ? 'aesthetic' : 'dent';
+  const page = content[clinic];
+  const doctor = document.querySelector('#doctor');
+  const previousDoctor = doctor.value;
+  doctor.replaceChildren(new Option(t('choose'), ''));
+  (page.doctors || []).forEach((item) => doctor.append(new Option(item.fullName, item.id)));
+  if ([...doctor.options].some((option) => option.value === previousDoctor)) doctor.value = previousDoctor;
+  const select = document.querySelector('#service');
+  const previousService = select.value;
+  select.replaceChildren(new Option(t('choose'), ''));
+  page.services.forEach((service) => select.append(new Option(tx(service.title), tx(service.title))));
+  if ([...select.options].some((option) => option.value === previousService)) select.value = previousService;
+  const slot = document.querySelector('#slot');
+  const previousSlot = slot.value;
+  const date = document.querySelector('[name="preferredDate"]').value;
+  const sunday = Boolean(date) && new Date(`${date}T12:00:00`).getDay() === 0;
+  slot.replaceChildren(new Option(t('choose'), ''));
+  timeSlots().forEach((value) => slot.append(new Option(value, value)));
+  slot.disabled = sunday;
+  slot.required = !sunday;
+  if (!sunday && [...slot.options].some((option) => option.value === previousSlot)) slot.value = previousSlot;
+  document.querySelector('#slotHint').textContent = sunday ? t('closedSunday') : '';
+}
+let slide = 0;
+let slideTimer = 0;
+function moveSlides() {
+  const track = document.querySelector('#tTrack');
+  track.style.transform = `translateX(-${slide * 100}%)`;
+}
+function renderTestimonials() {
+  const items = content[clinicKey]?.testimonials || [];
+  const summary = document.querySelector('#ratingSummary');
+  if (!items.length) summary.textContent = t('noReviews');
+  else {
+    const avg = items.reduce((sum, item) => sum + Number(item.rating || 0), 0) / items.length;
+    const full = Math.round(avg);
+    summary.textContent = `${'★'.repeat(full)}${'☆'.repeat(5 - full)} ${avg.toFixed(1)}/5 · ${items.length} ${t('reviewsCount')}`;
+  }
+  const carousel = document.querySelector('#testimonials');
+  carousel.hidden = items.length === 0;
+  const track = document.querySelector('#tTrack');
+  track.replaceChildren();
+  items.forEach((item) => {
+    const slideBox = el('div', 't-slide');
+    const card = el('article', 't-card');
+    card.append(
+      el('div', 'stars', `${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}`),
+      el('p', 'quote', tx(item.body)),
+      el('p', 'who', item.anonymous || !item.patientName ? t('anonymous') : item.patientName),
+      el('p', 'when', item.reviewDate || '')
+    );
+    slideBox.appendChild(card);
+    track.appendChild(slideBox);
+  });
+  document.querySelector('.t-prev').hidden = items.length < 2;
+  document.querySelector('.t-next').hidden = items.length < 2;
+  slide = 0;
+  moveSlides();
+  window.clearInterval(slideTimer);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (items.length > 1 && !reduce) {
+    slideTimer = window.setInterval(() => {
+      slide = (slide + 1) % items.length;
+      moveSlides();
+    }, 6000);
+  }
+}
+const starPick = document.querySelector('#starPick');
+let reviewRating = 0;
+for (let score = 1; score <= 5; score += 1) {
+  const star = el('button', '', '★');
+  star.type = 'button';
+  star.setAttribute('aria-label', String(score));
+  star.addEventListener('click', () => {
+    reviewRating = score;
+    [...starPick.children].forEach((node, index) => node.classList.toggle('is-on', index < score));
+  });
+  starPick.appendChild(star);
+}
+document.querySelector('#reviewForm [name="anonymous"]').addEventListener('change', (event) => {
+  const name = document.querySelector('#reviewForm [name="patientName"]');
+  name.required = !event.target.checked;
+  name.disabled = event.target.checked;
+});
+document.querySelector('#reviewForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const note = document.querySelector('#reviewNote');
+  const data = Object.fromEntries(new FormData(form));
+  note.textContent = '';
+  if (!reviewRating) {
+    note.textContent = t('choose');
+    return;
+  }
+  try {
+    const response = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clinic: clinicKey,
+        rating: reviewRating,
+        patientName: data.patientName || '',
+        anonymous: data.anonymous === 'on',
+        text: data.text || '',
+        website: data.website || ''
+      })
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error);
+    note.textContent = t('reviewPending');
+    form.reset();
+    reviewRating = 0;
+    [...starPick.children].forEach((node) => node.classList.remove('is-on'));
+    document.querySelector('#reviewForm [name="patientName"]').disabled = false;
+  } catch (err) {
+    note.textContent = err.message;
+  }
+});
+document.querySelector('#clinicPick').addEventListener('change', () => { if (content) fillBooking(); });
+document.querySelector('[name="preferredDate"]').addEventListener('change', () => { if (content) fillBooking(); });
+document.querySelector('.t-next').addEventListener('click', () => {
+  const count = document.querySelectorAll('.t-slide').length;
+  if (count < 2) return;
+  slide = (slide + 1) % count;
+  moveSlides();
+});
+document.querySelector('.t-prev').addEventListener('click', () => {
+  const count = document.querySelectorAll('.t-slide').length;
+  if (count < 2) return;
+  slide = (slide - 1 + count) % count;
+  moveSlides();
+});
 
 document.querySelector('#form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -166,16 +344,22 @@ document.querySelector('#form').addEventListener('submit', async (event) => {
   const form = event.currentTarget;
   const data = Object.fromEntries(new FormData(form));
   note.textContent = '';
+  if (data.preferredDate && new Date(`${data.preferredDate}T12:00:00`).getDay() === 0) {
+    note.textContent = t('closedSunday');
+    return;
+  }
   try {
     const response = await fetch('/api/appointments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, clinic: clinicKey })
+      body: JSON.stringify(data)
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error);
-    note.textContent = t('sent');
+    note.textContent = payload.emailSent ? t('sent') : t('savedNoMail');
     form.reset();
+    document.querySelector('#clinicPick').value = clinicKey;
+    if (content) fillBooking();
   } catch (err) {
     note.textContent = err.message;
   }

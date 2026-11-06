@@ -4,6 +4,7 @@ const express = require('express');
 const session = require('express-session');
 const multer = require('multer');
 const sharp = require('sharp');
+const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 
 if (!process.env.SUPABASE_URL) {
@@ -70,6 +71,99 @@ function clinicsOf(value) {
   return [...new Set(list.filter((item) => item === 'dent' || item === 'aesthetic'))];
 }
 
+const CLINIC_EMAIL = 'briliantdent26@gmail.com';
+
+function bookingSlots() {
+  const slots = [];
+  for (let hour = 9; hour <= 19; hour += 1) {
+    const hh = String(hour).padStart(2, '0');
+    slots.push(`${hh}:00`, `${hh}:30`);
+  }
+  return slots;
+}
+
+function shapeTestimonial(item) {
+  return {
+    id: item.id,
+    clinic: item.clinic,
+    patientName: item.patient_name || '',
+    anonymous: item.anonymous === true,
+    rating: item.rating,
+    body: item.body || {},
+    reviewDate: item.review_date || '',
+    visible: item.visible !== false,
+    status: item.status || 'approved',
+    sortOrder: item.sort_order
+  };
+}
+
+function reviewPayload(body) {
+  const rating = Number(body.rating);
+  const clinic = body.clinic === 'aesthetic' ? 'aesthetic' : 'dent';
+  const anonymous = body.anonymous === true;
+  const patientName = String(body.patientName || '').trim().slice(0, 120);
+  if (!anonymous && patientName.length < 2) {
+    const error = new Error('Shkruani emrin ose shënojeni si anonim.');
+    error.status = 400;
+    throw error;
+  }
+  if (![1, 2, 3, 4, 5].includes(rating)) {
+    const error = new Error('Zgjidhni vlerësimin nga 1 deri në 5.');
+    error.status = 400;
+    throw error;
+  }
+  const text = asObject(body.body);
+  if (!String(text.sq || '').trim()) {
+    const error = new Error('Shkruani tekstin e vlerësimit.');
+    error.status = 400;
+    throw error;
+  }
+  const reviewDate = String(body.reviewDate || '');
+  const status = ['pending', 'approved', 'rejected'].includes(body.status) ? body.status : 'approved';
+  return {
+    clinic,
+    patient_name: anonymous ? '' : patientName,
+    anonymous,
+    rating,
+    body: text,
+    review_date: /^\d{4}-\d{2}-\d{2}$/.test(reviewDate) ? reviewDate : null,
+    status,
+    visible: status === 'approved' && body.visible !== false
+  };
+}
+
+async function sendBookingEmail(booking) {
+  const pass = process.env.SMTP_PASS;
+  const user = process.env.SMTP_USER || CLINIC_EMAIL;
+  if (!pass) return false;
+  const transport = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: String(process.env.SMTP_PORT || '') === '465',
+    auth: { user, pass }
+  });
+  const clinicName = booking.clinic === 'aesthetic' ? 'Brilliant Aesthetic' : 'Brilliant Dent';
+  const lines = [
+    `Klinikë: ${clinicName}`,
+    `Mjeku: ${booking.doctorName}`,
+    `Shërbimi: ${booking.serviceName}`,
+    `Data: ${booking.preferredDate}`,
+    `Ora: ${booking.preferredTime}`,
+    `Pacienti: ${booking.fullName}`,
+    `Telefoni: ${booking.phone}`,
+    `Email: ${booking.email}`,
+    booking.message ? `Mesazhi: ${booking.message}` : ''
+  ].filter(Boolean);
+  await transport.sendMail({
+    from: `"Brilliant Dent" <${user}>`,
+    to: CLINIC_EMAIL,
+    replyTo: booking.email,
+    subject: `Termin i ri — ${booking.fullName} — ${clinicName}`,
+    text: lines.join('\n')
+  });
+  return true;
+}
+
 function shapeGallery(row) {
   return {
     id: row.id,
@@ -127,7 +221,7 @@ function shapeDoctor(row, gallery) {
 }
 
 async function loadBundle(sb) {
-  const [clinics, doctors, services, gallery, pairs, contact, social, work] = await Promise.all([
+  const [clinics, doctors, services, gallery, pairs, contact, social, work, testimonials] = await Promise.all([
     sb.from('clinics').select('*'),
     sb.from('doctors').select('*').order('sort_order', { ascending: true }),
     sb.from('services').select('*').order('sort_order', { ascending: true }),
@@ -135,9 +229,10 @@ async function loadBundle(sb) {
     sb.from('before_after').select('*').order('sort_order', { ascending: true }),
     sb.from('contact_info').select('*').eq('id', 1).maybeSingle(),
     sb.from('social_links').select('*').order('sort_order', { ascending: true }),
-    sb.from('doctor_gallery').select('*').order('sort_order', { ascending: true })
+    sb.from('doctor_gallery').select('*').order('sort_order', { ascending: true }),
+    sb.from('testimonials').select('*').order('sort_order', { ascending: true })
   ]);
-  const failed = [clinics, doctors, services, gallery, pairs, contact, social, work].find((item) => item.error);
+  const failed = [clinics, doctors, services, gallery, pairs, contact, social, work, testimonials].find((item) => item.error);
   if (failed) throw new Error(failed.error.message);
   return {
     clinics: clinics.data || [],
@@ -147,7 +242,8 @@ async function loadBundle(sb) {
     pairs: pairs.data || [],
     contact: contact.data,
     social: social.data || [],
-    work: work.data || []
+    work: work.data || [],
+    testimonials: testimonials.data || []
   };
 }
 
@@ -155,6 +251,10 @@ function present(bundle, { includeHidden = false } = {}) {
   const doctors = bundle.doctors
     .filter((doctor) => includeHidden || doctor.visible !== false)
     .map((doctor) => shapeDoctor(doctor, bundle.work.filter((item) => item.doctor_id === doctor.id)));
+  const testimonials = (bundle.testimonials || [])
+    .filter((item) => includeHidden || (item.visible !== false && (item.status || 'approved') === 'approved'))
+    .map(shapeTestimonial)
+    .sort((a, b) => String(b.reviewDate).localeCompare(String(a.reviewDate)));
   const pack = (slug) => {
     const clinic = bundle.clinics.find((item) => item.slug === slug) || {};
     return {
@@ -177,6 +277,7 @@ function present(bundle, { includeHidden = false } = {}) {
       gallery: bundle.gallery.filter((item) => item.clinic === slug).map(shapeGallery),
       beforeAfter: bundle.pairs.filter((item) => item.clinic === slug).map(shapePair),
       doctors: doctors.filter((doctor) => (doctor.clinics || []).includes(slug)),
+      testimonials: testimonials.filter((item) => item.clinic === slug),
       social: bundle.social
         .filter((item) => item.clinic === slug)
         .map((item) => ({
@@ -196,13 +297,15 @@ function present(bundle, { includeHidden = false } = {}) {
           phone: bundle.contact.phone || '',
           phoneSecondary: bundle.contact.phone_secondary || '',
           email: bundle.contact.email || '',
+          whatsapp: bundle.contact.whatsapp || '',
           hours: bundle.contact.hours || [],
           mapQuery: bundle.contact.map_query || ''
         }
       : null,
     dent: pack('dent'),
     aesthetic: pack('aesthetic'),
-    doctors
+    doctors,
+    testimonials
   };
 }
 
@@ -290,6 +393,7 @@ app.use(session({
 }));
 
 const loginAttempts = new Map();
+const reviewAttempts = new Map();
 
 function page(file) {
   return (req, res) => res.sendFile(path.join(publicDir, file));
@@ -327,10 +431,12 @@ app.post('/api/appointments', async (req, res) => {
     const phone = String(req.body.phone || '').trim();
     const email = String(req.body.email || '').trim();
     const preferred = String(req.body.preferredDate || '');
+    const preferredTime = String(req.body.preferredTime || '');
+    const serviceName = String(req.body.serviceName || '').trim();
     if (fullName.length < 2 || phone.length < 6) {
       return res.status(400).json({ error: 'Shkruani emrin dhe telefonin.' });
     }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ error: 'Email-i nuk është i vlefshëm.' });
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(preferred)) {
@@ -338,24 +444,85 @@ app.post('/api/appointments', async (req, res) => {
     }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (new Date(`${preferred}T00:00:00`) < today) {
-      return res.status(400).json({ error: 'Data nuk mund të jetë në të kaluarën.' });
-    }
-    const { error } = await sbAnon().from('appointments').insert({
+    const chosen = new Date(`${preferred}T12:00:00`);
+    if (chosen < today) return res.status(400).json({ error: 'Data nuk mund të jetë në të kaluarën.' });
+    if (chosen.getDay() === 0) return res.status(400).json({ error: 'Të dielën klinika është e mbyllur.' });
+    if (!bookingSlots().includes(preferredTime)) return res.status(400).json({ error: 'Zgjidhni orarin.' });
+    const page = present(await loadBundle(sbAnon()))[clinic];
+    const doctor = page.doctors.find((item) => item.id === String(req.body.doctorId || ''));
+    if (!doctor) return res.status(400).json({ error: 'Zgjidhni mjekun.' });
+    const serviceOk = page.services.some((service) => ['sq', 'en', 'de'].some((lang) => String(service.title?.[lang] || '') === serviceName));
+    if (!serviceOk) return res.status(400).json({ error: 'Zgjidhni shërbimin.' });
+    const booking = {
       clinic,
-      full_name: fullName.slice(0, 140),
+      fullName: fullName.slice(0, 140),
       phone: phone.slice(0, 40),
       email: email.slice(0, 160),
-      service_name: String(req.body.serviceName || '').slice(0, 180),
-      doctor_name: String(req.body.doctorName || '').slice(0, 140),
-      preferred_date: preferred,
+      serviceName: serviceName.slice(0, 180),
+      doctorName: doctor.fullName,
+      preferredDate: preferred,
+      preferredTime,
       message: String(req.body.message || '').slice(0, 2000)
+    };
+    const { error } = await sbAnon().from('appointments').insert({
+      clinic: booking.clinic,
+      full_name: booking.fullName,
+      phone: booking.phone,
+      email: booking.email,
+      service_name: booking.serviceName,
+      doctor_name: booking.doctorName,
+      doctor_id: doctor.id,
+      preferred_date: booking.preferredDate,
+      preferred_time: booking.preferredTime,
+      message: booking.message
     });
     if (error) throw error;
-    res.json({ ok: true });
+    let emailSent = false;
+    try {
+      emailSent = await sendBookingEmail(booking);
+    } catch (mailError) {
+      console.error(mailError);
+    }
+    res.json({ ok: true, emailSent });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Kërkesa nuk u ruajt. Provoni përsëri ose na telefononi.' });
+  }
+});
+
+app.post('/api/reviews', async (req, res) => {
+  try {
+    if (req.body.website) return res.json({ ok: true });
+    const now = Date.now();
+    const key = req.ip;
+    const hits = (reviewAttempts.get(key) || []).filter((time) => now - time < 10 * 60 * 1000);
+    if (hits.length >= 5) return res.status(429).json({ error: 'Mund të dërgoni deri në 5 vlerësime në 10 minuta.' });
+    const clinic = req.body.clinic === 'aesthetic' ? 'aesthetic' : 'dent';
+    const anonymous = req.body.anonymous === true || req.body.anonymous === 'true';
+    const patientName = String(req.body.patientName || '').trim();
+    const text = String(req.body.text || '').trim();
+    const rating = Number(req.body.rating);
+    if (!anonymous && patientName.length < 2) return res.status(400).json({ error: 'Shkruani emrin ose zgjidhni anonim.' });
+    if (![1, 2, 3, 4, 5].includes(rating)) return res.status(400).json({ error: 'Zgjidhni vlerësimin nga 1 deri në 5.' });
+    if (text.length < 8) return res.status(400).json({ error: 'Shkruani vlerësimin.' });
+    const today = new Date().toISOString().slice(0, 10);
+    const { error } = await sbAnon().from('testimonials').insert({
+      clinic,
+      patient_name: anonymous ? '' : patientName.slice(0, 120),
+      anonymous,
+      rating,
+      body: { sq: text.slice(0, 2000), en: text.slice(0, 2000), de: text.slice(0, 2000) },
+      review_date: today,
+      status: 'pending',
+      visible: false
+    });
+    if (error) throw error;
+    hits.push(now);
+    reviewAttempts.set(key, hits);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Vlerësimi nuk u dërgua. Provoni përsëri.' });
   }
 });
 
@@ -447,6 +614,7 @@ app.put('/api/admin/contact', requireAdmin, async (req, res) => {
     phone: String(req.body.phone || '').slice(0, 40),
     phone_secondary: String(req.body.phoneSecondary || '').slice(0, 40),
     email: String(req.body.email || '').slice(0, 160),
+    whatsapp: String(req.body.whatsapp || '').slice(0, 40),
     hours,
     map_query: String(req.body.mapQuery || '').slice(0, 180)
   }).eq('id', 1);
@@ -539,6 +707,24 @@ app.post('/api/admin/gallery', requireAdmin, upload.single('file'), async (req, 
     console.error(err);
     res.status(err.status || 400).json({ error: err.message || 'Ngarkimi dështoi.' });
   }
+});
+
+app.put('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
+  const patch = {};
+  if (req.body.caption) patch.caption = asObject(req.body.caption);
+  if (req.body.sortOrder != null) patch.sort_order = Number(req.body.sortOrder) || 0;
+  const { error } = await req.sb.from('gallery_items').update(patch).eq('id', req.params.id);
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+app.post('/api/admin/gallery-order', requireAdmin, async (req, res) => {
+  const ids = Array.isArray(req.body.ids) ? req.body.ids : [];
+  for (let index = 0; index < ids.length; index += 1) {
+    const { error } = await req.sb.from('gallery_items').update({ sort_order: index }).eq('id', ids[index]);
+    if (error) return res.status(400).json({ error: error.message });
+  }
+  res.json({ ok: true });
 });
 
 app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
@@ -703,8 +889,34 @@ app.delete('/api/admin/doctor-gallery/:id', requireAdmin, async (req, res) => {
 });
 
 app.patch('/api/admin/appointments/:id', requireAdmin, async (req, res) => {
-  const status = ['new', 'contacted', 'closed'].includes(req.body.status) ? req.body.status : 'new';
+  const status = ['new', 'confirmed', 'cancelled', 'contacted', 'closed'].includes(req.body.status) ? req.body.status : 'new';
   const { error } = await req.sb.from('appointments').update({ status }).eq('id', req.params.id);
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+app.post('/api/admin/testimonials', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await req.sb.from('testimonials').insert(reviewPayload(req.body)).select('*').single();
+    if (error) throw error;
+    res.json({ item: shapeTestimonial(data) });
+  } catch (err) {
+    res.status(err.status || 400).json({ error: err.message || 'Vlerësimi nuk u ruajt.' });
+  }
+});
+
+app.put('/api/admin/testimonials/:id', requireAdmin, async (req, res) => {
+  try {
+    const { error } = await req.sb.from('testimonials').update(reviewPayload(req.body)).eq('id', req.params.id);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(err.status || 400).json({ error: err.message || 'Vlerësimi nuk u ruajt.' });
+  }
+});
+
+app.delete('/api/admin/testimonials/:id', requireAdmin, async (req, res) => {
+  const { error } = await req.sb.from('testimonials').delete().eq('id', req.params.id);
   if (error) return res.status(400).json({ error: error.message });
   res.json({ ok: true });
 });

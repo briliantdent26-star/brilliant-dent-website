@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html class="motion" lang="sq">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Brilliant Dent</title>
   <link rel="icon" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Outfit:wght@340;480;560&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="/css/site.css">
 </head>
-<body>
+<body class="has-hero">
   <header class="nav">
     <a class="brand" href="/"><span class="mark">B</span><span><b>BRILLIANT</b><small>Dent · Aesthetic</small></span></a>
     <button class="menu-btn" type="button" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
@@ -27,7 +27,7 @@
     </nav>
   </header>
   <section class="hero" id="ballina">
-    <div class="hero-copy">
+    <div class="hero-copy reveal">
       <p class="kicker" data-bind="kicker"></p>
       <h1 data-bind="hero"></h1>
       <p class="lede" data-bind="sub"></p>
@@ -72,6 +72,31 @@
       <div class="gallery-grid" id="gallery"></div>
     </div>
   </section>
+  <section class="section" id="deshmite">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker" data-i18n="testimonialsKicker"></p>
+        <h2 data-i18n="testimonials"></h2>
+      </div>
+      <p class="rating-summary" id="ratingSummary"></p>
+      <div class="t-carousel" id="testimonials">
+        <button class="t-nav t-prev" type="button" aria-label="Previous">‹</button>
+        <div class="t-track" id="tTrack"></div>
+        <button class="t-nav t-next" type="button" aria-label="Next">›</button>
+      </div>
+      <form id="reviewForm" class="panel review-form">
+        <p class="kicker" data-i18n="leaveReview"></p>
+        <p id="reviewClinic"></p>
+        <div class="star-pick" id="starPick" role="group" aria-label="Rating"></div>
+        <label><input name="anonymous" type="checkbox"> <span data-i18n="anonymousLabel"></span></label>
+        <label><span data-i18n="name"></span><input name="patientName" required></label>
+        <label><span data-i18n="reviewText"></span><textarea name="text" required minlength="8"></textarea></label>
+        <input class="honeypot" name="website" tabindex="-1" autocomplete="off">
+        <button class="btn btn-navy" type="submit" data-i18n="submitReview"></button>
+        <p class="note" id="reviewNote"></p>
+      </form>
+    </div>
+  </section>
   <section class="section" id="kontakt">
     <div class="wrap contact-grid">
       <div>
@@ -81,14 +106,23 @@
         <p id="phones"></p>
         <a id="email"></a>
         <ul class="hours" id="hours"></ul>
-        <iframe class="map" id="map" title="Harta" loading="lazy"></iframe>
+        <iframe class="map" id="map" title="Harta" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <a class="directions" id="directions" target="_blank" rel="noopener" data-i18n="directions"></a>
       </div>
       <form id="form" class="panel" style="padding:1.2rem">
+        <label><span data-i18n="clinic"></span>
+          <select id="clinicPick" name="clinic" required>
+            <option value="dent">Brilliant Dent</option>
+            <option value="aesthetic">Brilliant Aesthetic</option>
+          </select>
+        </label>
+        <label><span data-i18n="doctorPick"></span><select id="doctor" name="doctorId" required></select></label>
         <label><span data-i18n="name"></span><input name="fullName" required></label>
         <label><span data-i18n="phone"></span><input name="phone" required></label>
-        <label><span data-i18n="email"></span><input name="email" type="email"></label>
-        <label><span data-i18n="service"></span><select id="service" name="serviceName"></select></label>
+        <label><span data-i18n="email"></span><input name="email" type="email" required></label>
+        <label><span data-i18n="service"></span><select id="service" name="serviceName" required></select></label>
         <label><span data-i18n="date"></span><input name="preferredDate" type="date" required></label>
+        <label><span data-i18n="time"></span><select id="slot" name="preferredTime" required></select><small id="slotHint"></small></label>
         <label><span data-i18n="message"></span><textarea name="message"></textarea></label>
         <input class="honeypot" name="website" tabindex="-1" autocomplete="off">
         <button class="btn btn-navy" type="submit" data-i18n="send"></button>
@@ -99,7 +133,7 @@
   <footer class="footer">
     <div class="wrap footer-row">
       <span>© <span id="year"></span> Brilliant Dent · Aesthetic Clinic</span>
-      <span id="footerSocial" class="icon-row"></span>
+      <nav id="footerSocial" class="footer-social" aria-label="Rrjete sociale"></nav>
     </div>
   </footer>
   <script src="/js/common.js"></script>
