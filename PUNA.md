@@ -43,3 +43,9 @@
 - 14 shërbimet dentare, 14 estetike, të dy profilet, orari, adresa dhe përshkrimet e galerisë kanë frëngjisht. Tekstet shqip, anglisht dhe gjermanisht mbetën. Arsimimi i Vjollcës mbeti “specializim në estetikën e fytyrës dhe të lëkurës”, pa shkollë të shtuar.
 - /dent dhe /estetike kanë titujt e kërkuar, përshkrim, Open Graph, Twitter, canonical dhe JSON-LD me adresën, të dy telefonat, orarin e hënë–shtunë 09:00–20:00 dhe koordinatat 42.3702, 21.1553. sitemap.xml dhe robots.txt janë publikë. Paneli mbetet noindex. Përgjigjet e mëdha dërgohen të ngjeshura.
 - U provua lokalisht: FR te /dent (14 shërbime), /estetike (14), ballina, profili i Vjollcës dhe menuja në 390px. Kthimi te SQ i rikthen tekstet shqip. Pa rrëshqitje horizontale.
+
+## 2026-11-06 — Hero pa fletë mbi foto
+
+- Pllaka e errët që mbulonte foton u hoq. Fotoja qëndron e lirë. Titulli dhe përshkrimi janë në një shirit poshtë fotos, me shkronja të bardha mbi fund të errët, që lexohen pa e mbyllur ndërtesën.
+- Në sliderin e stomatologjisë, me radhë: fasada, kabineti i trajtimit, hapësira e pritjes. Fotot e mëparshme të atij slideri u zëvendësuan.
+- Në telefon fotoja zë gjerësinë e ekranit dhe butonat qëndrojnë poshtë tekstit, pa u mbuluar nga WhatsApp. Në ekran të gjerë fotoja dhe shiriti hyjnë në një ekran.

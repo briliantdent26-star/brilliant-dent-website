@@ -27,7 +27,7 @@ function carousel(images) {
     image.loading = itemIndex === 0 ? 'eager' : 'lazy';
     if (itemIndex === 0) image.fetchPriority = 'high';
     image.decoding = 'async';
-    if (/hero-2|burim/.test(item.url)) slide.classList.add('is-portrait');
+    if (/burim/.test(item.url)) slide.classList.add('is-portrait');
     slide.appendChild(image);
     media.appendChild(slide);
     slides.push(slide);
