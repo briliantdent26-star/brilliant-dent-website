@@ -100,10 +100,11 @@ body.has-hero .nav.solid .brand small, body.has-hero .nav.open .brand small { co
   color: white; overflow: hidden; background: var(--navy);
 }
 .hero-copy {
-  position: relative; z-index: 1; width: min(740px, calc(100% - 10vw));
-  margin: 22vh 6vw 12vh; padding: 0; display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; z-index: 1; width: min(460px, calc(100% - 10vw));
+  margin: 28vh 5vw 11vh; padding: 0; display: flex; flex-direction: column; justify-content: flex-end;
 }
-.hero .lede { color: rgba(255,255,255,.82); }
+.hero h1 { font-size: clamp(1.65rem, 2.7vw, 2.65rem); max-width: 16ch; line-height: 1.12; }
+.hero .lede { color: rgba(255,255,255,.88); font-size: 0.92rem; line-height: 1.45; max-width: 34rem; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
 .hero .btn-line { color: white; }
 .hero-media { position: absolute; inset: 0; min-height: 100%; overflow: hidden; background: #1a2433; }
@@ -124,11 +125,11 @@ body.has-hero .nav.solid .brand small, body.has-hero .nav.open .brand small { co
 [data-theme="aesthetic"] .hero-media { background: #6d5348; }
 [data-theme="aesthetic"] .hero-media::after {
   background:
-    linear-gradient(to bottom, rgba(92, 58, 62, .34), transparent 16%),
-    linear-gradient(100deg, rgba(98, 52, 58, .72) 0%, rgba(140, 86, 82, .28) 30%, rgba(160, 110, 100, .06) 56%, rgba(120, 72, 68, 0) 72%);
+    linear-gradient(to bottom, rgba(18, 12, 16, .4), transparent 16%),
+    linear-gradient(105deg, rgba(24, 14, 20, .7) 0%, rgba(24, 14, 20, .32) 32%, rgba(24, 14, 20, 0) 62%);
 }
 [data-theme="aesthetic"] .hero-copy {
-  width: min(680px, calc(100% - 10vw)); margin: 22vh 6vw 14vh;
+  width: min(460px, calc(100% - 10vw)); margin: 28vh 5vw 11vh;
   padding: 0; border: 0; background: none; backdrop-filter: none; color: #fffaf7;
 }
 [data-theme="aesthetic"] .hero .kicker { color: #f6d3c4; }
@@ -144,7 +145,7 @@ body.has-hero[data-theme="aesthetic"] .nav {
 .slide img, .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; transform: scale(1.05); }
 html.motion .slide.is-on img { animation: hero-ken 8s ease-out forwards; }
 .slide.is-portrait img { object-position: center 34%; }
-@keyframes hero-ken { from { transform: scale(1.04); } to { transform: scale(1.12); } }
+@keyframes hero-ken { from { transform: scale(1.01); } to { transform: scale(1.045); } }
 .hero-controls {
   position: absolute; z-index: 2; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
   display: flex; align-items: center; gap: 0.65rem;
@@ -454,6 +455,7 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
   .stats, .equip, .gallery-masonry { grid-template-columns: 1fr; }
   .gallery-masonry { column-count: 1; }
   .hero-copy { margin-top: 18vh; margin-bottom: 8vh; }
+  .hero h1 { font-size: clamp(1.4rem, 6.2vw, 1.85rem); }
   .t-slide { padding: 0 2.6rem; }
   .whatsapp { right: 12px; bottom: 12px; width: 52px; height: 52px; }
   h1 { font-size: clamp(2.2rem, 11vw, 3.2rem); }
