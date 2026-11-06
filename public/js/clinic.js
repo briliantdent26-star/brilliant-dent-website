@@ -5,6 +5,7 @@ document.body.dataset.clinic = clinicKey;
 let content;
 
 let heroTimer;
+let roomTimer;
 
 function carousel(images) {
   clearInterval(heroTimer);
@@ -27,8 +28,8 @@ function carousel(images) {
     image.loading = itemIndex === 0 ? 'eager' : 'lazy';
     if (itemIndex === 0) image.fetchPriority = 'high';
     image.decoding = 'async';
-    image.style.objectPosition = itemIndex === 0 ? 'center 18%' : 'center center';
-    if (/burim/.test(item.url)) slide.classList.add('is-portrait');
+    image.style.objectPosition = clinicKey === 'dent' && itemIndex === 0 ? 'center 18%' : 'center center';
+    if (item.fit === 'contain') slide.classList.add('is-poster');
     slide.appendChild(image);
     media.appendChild(slide);
     slides.push(slide);
@@ -61,6 +62,76 @@ function carousel(images) {
   arm();
 }
 
+function roomShow() {
+  clearInterval(roomTimer);
+  const section = document.querySelector('#roomShow');
+  const frame = document.querySelector('#roomFrame');
+  if (!section || !frame) return;
+  if (clinicKey !== 'dent') {
+    section.hidden = true;
+    frame.replaceChildren();
+    return;
+  }
+  const lang = getLang();
+  const photos = [
+    ['/media/dent/room-1.webp', { sq: 'Kabineti i estetikës', en: 'Aesthetic treatment room', de: 'Ästhetik-Behandlungsraum', fr: 'Salle de soin esthétique' }],
+    ['/media/dent/room-2.webp', { sq: 'Recepsioni', en: 'Reception', de: 'Empfang', fr: 'Réception' }],
+    ['/media/dent/room-3.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
+    ['/media/dent/room-4.webp', { sq: 'Hapësira e pritjes', en: 'Waiting area', de: 'Wartebereich', fr: "Salle d'attente" }],
+    ['/media/dent/room-5.webp', { sq: 'Hyrja e kabinetit', en: 'Treatment room entrance', de: 'Eingang zum Behandlungsraum', fr: 'Entrée du cabinet' }]
+  ];
+  section.hidden = false;
+  frame.replaceChildren();
+  let index = 0;
+  const slides = photos.map(([url, caption], itemIndex) => {
+    const slide = el('div', `slide${itemIndex === 0 ? ' is-on' : ''}`);
+    const image = el('img');
+    image.src = url;
+    image.alt = caption[lang] || caption.sq;
+    image.decoding = 'async';
+    image.loading = itemIndex === 0 ? 'eager' : 'lazy';
+    slide.appendChild(image);
+    frame.appendChild(slide);
+    return slide;
+  });
+  const nav = el('div', 'room-nav');
+  const prev = el('button', 'hero-nav');
+  prev.type = 'button';
+  prev.setAttribute('aria-label', 'Fotoja e mëparshme');
+  prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+  const next = el('button', 'hero-nav');
+  next.type = 'button';
+  next.setAttribute('aria-label', 'Fotoja tjetër');
+  next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+  const dots = el('div', 'hero-dots');
+  photos.forEach((_, itemIndex) => {
+    const dot = el('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', String(itemIndex + 1));
+    if (itemIndex === 0) dot.classList.add('is-on');
+    dot.addEventListener('click', () => show(itemIndex));
+    dots.appendChild(dot);
+  });
+  nav.append(prev, dots, next);
+  frame.appendChild(nav);
+  function show(nextIndex) {
+    slides[index].classList.remove('is-on');
+    dots.children[index].classList.remove('is-on');
+    index = (nextIndex + slides.length) % slides.length;
+    slides[index].classList.add('is-on');
+    dots.children[index].classList.add('is-on');
+    arm();
+  }
+  function arm() {
+    clearInterval(roomTimer);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    roomTimer = setInterval(() => show(index + 1), 4200);
+  }
+  prev.onclick = () => show(index - 1);
+  next.onclick = () => show(index + 1);
+  arm();
+}
+
 function render() {
   const page = content[clinicKey];
   const lang = getLang();
@@ -73,7 +144,20 @@ function render() {
   document.querySelector('[data-bind="sub"]').textContent = tx(page.heroSubtitle);
   document.querySelector('[data-bind="aboutTitle"]').textContent = tx(page.aboutTitle);
   document.querySelector('[data-bind="aboutBody"]').textContent = tx(page.aboutBody);
-  carousel(page.gallery.filter((item) => item.placement === 'hero' && item.mediaType === 'image'));
+  const heroes = page.gallery.filter((item) => item.placement === 'hero' && item.mediaType === 'image');
+  if (clinicKey === 'aesthetic') {
+    heroes.unshift({
+      url: '/media/aes/hero-prx.webp',
+      fit: 'contain',
+      caption: {
+        sq: 'PRX-T33, Brilliant Aesthetic Clinic',
+        en: 'PRX-T33, Brilliant Aesthetic Clinic',
+        de: 'PRX-T33, Brilliant Aesthetic Clinic',
+        fr: 'PRX-T33, Brilliant Aesthetic Clinic'
+      }
+    });
+  }
+  carousel(heroes);
 
   const services = document.querySelector('#services');
   services.replaceChildren();
@@ -88,6 +172,7 @@ function render() {
     card.append(el('h3', '', tx(service.title)), el('p', '', tx(service.description)));
     services.appendChild(card);
   });
+  roomShow();
 
   const doctors = document.querySelector('#doctors');
   doctors.replaceChildren();
@@ -98,7 +183,7 @@ function render() {
     const photo = el('div', 'doctor-photo');
     if (doctor.photo) {
       const image = el('img');
-      image.src = doctor.photo;
+      image.src = /burim\.webp/.test(doctor.photo) ? `${doctor.photo}?v=2` : doctor.photo;
       image.alt = doctor.fullName;
       image.loading = 'lazy';
       photo.appendChild(image);

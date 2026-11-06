@@ -145,6 +145,16 @@ body.has-hero[data-theme="aesthetic"] .nav {
 .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.15s ease; }
 .slide.is-on { opacity: 1; }
 .slide img, .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; transform: none; }
+.slide.is-poster { background: #f7eef2; }
+.slide.is-poster img {
+  object-fit: contain;
+  background: transparent;
+  height: calc(100% - 58px);
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  display: block;
+}
 html.motion .slide.is-on img { animation: none; }
 .slide.is-portrait img { object-position: center center; }
 @keyframes hero-ken { from { transform: scale(1.01); } to { transform: scale(1.045); } }
@@ -170,6 +180,12 @@ html.motion .slide.is-on img { animation: none; }
 @keyframes hero-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 .section { padding: 5.8rem 0; scroll-margin-top: 5.4rem; }
+#sherbimet { padding-bottom: 1.6rem; }
+.room-show { padding: 0 0 0.4rem; }
+.room-frame { position: relative; aspect-ratio: 16 / 10; border-radius: 22px; overflow: hidden; background: #efe8df; }
+.room-nav { position: absolute; left: 0; right: 0; bottom: 0.85rem; z-index: 2; display: flex; justify-content: center; align-items: center; gap: 0.65rem; }
+.room-nav .hero-dots button.is-on::after { animation-duration: 4.2s; }
+#stafi { padding-top: 2.8rem; }
 .section-head { display: flex; justify-content: space-between; gap: 2rem; align-items: end; margin-bottom: 2rem; }
 .service-grid, .doctor-grid, .gallery-grid { display: grid; gap: 1.15rem; }
 .service-grid { grid-template-columns: 1fr; }
@@ -494,6 +510,9 @@ html.motion .reveal.is-in { animation: rise .85s ease forwards; }
 @media (max-width: 480px) {
   .wrap { width: calc(100% - 28px); }
   .section { padding: 3.4rem 0; }
+  #sherbimet { padding-bottom: 1rem; }
+  #stafi { padding-top: 1.6rem; }
+  .room-frame { border-radius: 16px; }
   .stats, .equip, .gallery-masonry { grid-template-columns: 1fr; }
   .gallery-masonry { column-count: 1; }
   .hero h1 { font-size: 1.28rem; }

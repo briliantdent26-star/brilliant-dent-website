@@ -57,7 +57,7 @@ function paint(data) {
     const photo = el('div', 'bio-photo');
     if (doctor.photo) {
       const image = el('img');
-      image.src = doctor.photo;
+      image.src = /burim\.webp/.test(doctor.photo) ? `${doctor.photo}?v=2` : doctor.photo;
       image.alt = doctor.fullName;
       image.loading = 'lazy';
       photo.appendChild(image);

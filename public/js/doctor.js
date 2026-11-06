@@ -17,7 +17,7 @@ function render() {
   photo.replaceChildren();
   if (doctor.photo) {
     const image = el('img');
-    image.src = doctor.photo;
+    image.src = /burim\.webp/.test(doctor.photo) ? `${doctor.photo}?v=2` : doctor.photo;
     image.alt = doctor.fullName;
     photo.appendChild(image);
   } else photo.appendChild(el('div', 'monogram', initials(doctor.fullName)));
