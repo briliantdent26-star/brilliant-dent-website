@@ -25,3 +25,8 @@
 - Ballina ka seksionin Rreth nesh: historia e dhënë, numëruesit 15+, 14+, 50.000+, 99%, teknologjia, dhe dy biografitë. Burimi ka foton e vet. Vjollca s’ka foto në databazë, prandaj del monogrami VS, jo një foto e shpikur.
 - Hero i plotë, nav prej xhami, Playfair dhe Inter, ngjyra navy/ar dhe krem/rose. Kartat ngrenë në hover. Seksionet hyjnë me scroll. Pa rrëshqitje horizontale te 320, 390, 768, 1024 dhe 1440.
 - Nuk u prek paneli i adminit, terminet, vlerësimet, as foto të reja pacientësh. CSS/JS mbeten të lexueshme; fotot e galerisë ngarkohen lazy dhe janë WebP.
+
+## 2026-11-06 — Remote git
+
+- origin u ndërrua te https://github.com/briliantdent/brilliant-dent-website.git
+- Commit lokal f2d6a46. Push dështoi: GitHub kthen “repository not found”. Llogaria briliantdent nuk ekziston ende. .env nuk u commit-ua.
