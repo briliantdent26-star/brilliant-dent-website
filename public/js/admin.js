@@ -75,7 +75,7 @@ function blankDoctor() {
   return {
     fullName: '', slug: '', title: {}, bio: {}, education: {}, experience: {}, certifications: {},
     email: '', emails: [], phone: '', phones: [], instagram: '', facebook: '', tiktok: '',
-    clinics: ['dent'], theme: 'dent', services: [], visible: true, gallery: []
+    clinics: ['dent'], theme: 'dent', services: [], hours: [], visible: true, gallery: []
   };
 }
 function editor(doctor) {
@@ -100,7 +100,8 @@ function editor(doctor) {
   addLang('Certifikimet', 'certifications');
   const phoneRows = contactRows('Telefonat', doctor.phones?.length ? doctor.phones : [doctor.phone].filter(Boolean), 'Telefoni', 'Shto telefon');
   const emailRows = contactRows('Email-et', doctor.emails?.length ? doctor.emails : [doctor.email].filter(Boolean), 'Email', 'Shto email');
-  box.append(phoneRows.box, emailRows.box);
+  const hours = hoursEditor(doctor.hours);
+  box.append(phoneRows.box, emailRows.box, hours.box);
   [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['tiktok', 'TikTok']].forEach(([key, label]) => {
     const input = document.createElement('input');
     input.placeholder = label;
@@ -157,6 +158,7 @@ function editor(doctor) {
     doctor.phone = phoneList[0] || '';
     doctor.emails = emailList;
     doctor.email = emailList[0] || '';
+    doctor.hours = hours.read();
     const body = { ...doctor };
     try {
       if (doctor.id) await api(`/api/admin/doctors/${doctor.id}`, { method: 'PUT', body });
@@ -644,8 +646,9 @@ function drawContact() {
   form.append(langs(contact.address, (lang, value) => { contact.address = { ...contact.address, [lang]: value }; }));
   const phones = contactRows('Telefonat', contact.phones?.length ? contact.phones : [contact.phone, contact.phoneSecondary].filter(Boolean), 'Telefoni', 'Shto telefon');
   const emails = contactRows('Email-et', contact.emails?.length ? contact.emails : [contact.email].filter(Boolean), 'Email', 'Shto email');
+  const hours = hoursEditor(contact.hours);
   const whatsapp = Object.assign(document.createElement('input'), { value: contact.whatsapp || '', placeholder: 'WhatsApp, p.sh. +383 44 654 129' });
-  form.append(phones.box, emails.box, whatsapp);
+  form.append(phones.box, emails.box, hours.box, whatsapp);
   const save = document.createElement('button');
   save.className = 'btn btn-navy'; save.textContent = 'Ruaj'; save.type = 'submit';
   form.append(save);
@@ -662,6 +665,7 @@ function drawContact() {
         phoneSecondary: phoneList[1] || '',
         emails: emailList,
         email: emailList[0] || '',
+        hours: hours.read(),
         whatsapp: whatsapp.value
       }
     });
@@ -685,6 +689,35 @@ function contactRows(title, values, placeholder, addLabel) {
   (values.length ? values : ['']).forEach(add);
   box.append(rows, button(addLabel, () => add('')));
   return { box, read: () => [...rows.querySelectorAll('input')].map((input) => input.value.trim()).filter(Boolean) };
+}
+function hoursEditor(items) {
+  const box = document.createElement('div');
+  box.className = 'contact-list';
+  box.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: 'Orari' }));
+  const list = document.createElement('div');
+  const rows = (Array.isArray(items) ? items : []).map((item) => ({
+    days: { ...(item.days || {}) },
+    time: { ...(item.time || {}) }
+  }));
+  function paint() {
+    list.replaceChildren();
+    rows.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'edit-card';
+      card.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: 'Ditët' }));
+      card.append(langs(item.days, (lang, value) => { item.days[lang] = value; }, false));
+      card.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: 'Ora' }));
+      card.append(langs(item.time, (lang, value) => { item.time[lang] = value; }, false));
+      card.append(button('Hiq', () => { rows.splice(index, 1); paint(); }));
+      list.appendChild(card);
+    });
+  }
+  paint();
+  box.append(list, button('Shto orar', () => { rows.push({ days: {}, time: {} }); paint(); }));
+  return {
+    box,
+    read: () => rows.filter((item) => ['sq', 'en', 'de', 'fr'].some((lang) => String(item.days[lang] || '').trim() || String(item.time[lang] || '').trim())).slice(0, 8)
+  };
 }
 function drawAppointments() {
   const labels = { new: 'e re', confirmed: 'e konfirmuar', cancelled: 'e anuluar', contacted: 'e kontaktuar', closed: 'e mbyllur' };

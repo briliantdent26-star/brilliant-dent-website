@@ -50,4 +50,4 @@
 - Në sliderin e stomatologjisë, me radhë: fasada, kabineti i trajtimit, hapësira e pritjes. Fotot e mëparshme të atij slideri u zëvendësuan.
 - Në telefon fotoja zë gjerësinë e ekranit dhe butonat qëndrojnë poshtë tekstit, pa u mbuluar nga WhatsApp. Në ekran të gjerë fotoja dhe shiriti hyjnë në një ekran.
 - Fotoja e dytë është salla e mbledhjes. Të tria fotot mbushin kutinë, pa vija të zeza anash dhe pa fletë mbi foto.
-- Galeria në panel ndërron fotot dhe videot MP4: slideri në mes (mes shërbimeve dhe stafit) dhe galeria poshtë. «Zëvendëso» e ndërron skedarin.
+- Te Kontakti, pronari e ndërron orarin e klinikës. Te Stafi, secili mjek ka orarin e vet.

@@ -235,6 +235,10 @@ function render() {
     } else photo.appendChild(el('div', 'monogram', initials(doctor.fullName)));
     const body = el('div', 'doctor-body');
     body.append(el('h3', '', doctor.fullName), el('p', '', tx(doctor.title)));
+    (doctor.hours || []).forEach((row) => {
+      const line = [tx(row.days), tx(row.time)].filter(Boolean).join(' · ');
+      if (line) body.append(el('p', '', line));
+    });
     link.append(photo, body);
     const icons = socialLinks(doctor);
     icons.style.padding = '0 1.1rem 1rem';

@@ -41,6 +41,17 @@ function render() {
     email.href = `mailto:${value}`;
     contact.appendChild(email);
   });
+  const hours = document.querySelector('#doctorHours');
+  hours.replaceChildren();
+  (doctor.hours || []).forEach((row) => {
+    const days = tx(row.days);
+    const time = tx(row.time);
+    if (!days && !time) return;
+    const li = el('li');
+    li.append(el('span', '', days), el('span', '', time));
+    hours.appendChild(li);
+  });
+  hours.hidden = !hours.children.length;
   const story = document.querySelector('#story');
   story.replaceChildren();
   [section(t('bio'), tx(doctor.bio)), section(t('education'), tx(doctor.education)), section(t('experience'), tx(doctor.experience)), section(t('certs'), tx(doctor.certifications))]

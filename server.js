@@ -212,6 +212,7 @@ function shapeDoctor(row, gallery) {
     clinics: row.clinics || [],
     theme: row.theme || 'dent',
     services: Array.isArray(row.services) ? row.services : [],
+    hours: Array.isArray(row.hours) ? row.hours : [],
     visible: row.visible !== false,
     sortOrder: row.sort_order || 0,
     gallery: (gallery || []).map((item) => ({
@@ -397,8 +398,17 @@ function doctorPayload(body, fallbackSlug) {
     clinics,
     theme: clinics.includes(theme) ? theme : clinics[0],
     services,
+    hours: hoursOf(body.hours),
     visible: body.visible !== false
   };
+}
+
+function hoursOf(value) {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 8).map((row) => ({
+    days: asObject(row && row.days),
+    time: asObject(row && (typeof row.time === 'string' ? { sq: row.time, en: row.time, de: row.time, fr: row.time } : row.time))
+  })).filter((row) => row.days.sq || row.days.en || row.days.de || row.days.fr || row.time.sq || row.time.en || row.time.de || row.time.fr);
 }
 
 const app = express();
@@ -731,10 +741,7 @@ app.put('/api/admin/clinics/:slug', requireAdmin, async (req, res) => {
 });
 
 app.put('/api/admin/contact', requireAdmin, async (req, res) => {
-  const hours = Array.isArray(req.body.hours) ? req.body.hours.slice(0, 8).map((row) => ({
-    days: asObject(row.days),
-    time: asObject(typeof row.time === 'string' ? { sq: row.time, en: row.time, de: row.time, fr: row.time } : row.time)
-  })) : [];
+  const hours = hoursOf(req.body.hours);
   const phones = (Array.isArray(req.body.phones) ? req.body.phones : [req.body.phone, req.body.phoneSecondary])
     .map((value) => String(value || '').trim().slice(0, 40))
     .filter(Boolean)
