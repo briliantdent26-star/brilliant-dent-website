@@ -35,3 +35,4 @@
 - Hero slider: mbulesa e errët dhe kutia lejla u hoqën. Ngjyra është ar për stomatologjinë dhe rozë e ngrohtë për estetikën, me pika dhe shigjeta. Fotot e LYKENS dhe fasada me tekst të ngjitur u zëvendësuan. Fotoja e vërtetë e recepsionit me Dr. Burimin mbeti.
 - Fotoja e parë është përsëri fasada e Brilliant Dental Clinic. Te estetika e njëjta ndërtesë, me përshkrimin “Standard i ri në estetikën e fytyrës.” Titulli mbi foto është më i vogël në të dyja anët.
 - Telefoni, tableti dhe ekrani i ngushtë: menuja hapet me buton, heroja hyn në një ekran pa u prerë butoni i terminit, WhatsApp nuk e mbulon. Në ballinë dyert qëndrojnë njëra mbi tjetrën nën 700px dhe krah për krah më gjerë. Përshkrimet e galerisë duken edhe pa mi.
+- Titulli i hero-sliderit qëndron mbi një pllakë të errët, që shkronjat e bardha të lexohen mbi çdo foto, te stomatologjia dhe te estetika.
