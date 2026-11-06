@@ -49,3 +49,4 @@
 - Pllaka e errët që mbulonte foton u hoq. Fotoja qëndron e lirë. Titulli dhe përshkrimi janë në një shirit poshtë fotos, me shkronja të bardha mbi fund të errët, që lexohen pa e mbyllur ndërtesën.
 - Në sliderin e stomatologjisë, me radhë: fasada, kabineti i trajtimit, hapësira e pritjes. Fotot e mëparshme të atij slideri u zëvendësuan.
 - Në telefon fotoja zë gjerësinë e ekranit dhe butonat qëndrojnë poshtë tekstit, pa u mbuluar nga WhatsApp. Në ekran të gjerë fotoja dhe shiriti hyjnë në një ekran.
+- Fotoja e dytë është salla e mbledhjes. Të tria fotot mbushin kutinë, pa vija të zeza anash dhe pa fletë mbi foto.

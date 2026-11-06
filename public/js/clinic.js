@@ -27,6 +27,7 @@ function carousel(images) {
     image.loading = itemIndex === 0 ? 'eager' : 'lazy';
     if (itemIndex === 0) image.fetchPriority = 'high';
     image.decoding = 'async';
+    image.style.objectPosition = itemIndex === 0 ? 'center 18%' : 'center center';
     if (/burim/.test(item.url)) slide.classList.add('is-portrait');
     slide.appendChild(image);
     media.appendChild(slide);
