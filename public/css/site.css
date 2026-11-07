@@ -299,6 +299,19 @@ textarea { min-height: 110px; resize: vertical; }
 .hours { list-style: none; padding: 0; margin: 0.6rem 0 0; }
 .hours li { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--line); padding: 0.4rem 0; }
 
+[hidden] { display: none !important; }
+.site-qr { display: flex; justify-content: center; margin: 0 auto 1.15rem; }
+.site-qr img { width: 148px; height: 148px; background: #fff; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+.qr-sheet { display: grid; justify-items: center; text-align: center; gap: 0.55rem; }
+.qr-sheet img { width: min(280px, 72vw); height: auto; background: #fff; }
+.qr-url { margin: 0; letter-spacing: 0.06em; }
+@media print {
+  .no-print, .side, .whatsapp, #login { display: none !important; }
+  body.admin-body { background: #fff; }
+  body.admin-body .admin-shell { display: block !important; width: auto; margin: 0; }
+  body.admin-body .main-panel { border: 0; box-shadow: none; }
+  body.admin-body .qr-sheet img { width: 78mm; height: 78mm; }
+}
 .footer { padding: 2.2rem 0 2.6rem; border-top: 1px solid var(--line); color: var(--muted); }
 .footer-row { display: flex; justify-content: space-between; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
 .footer a { color: var(--navy); }

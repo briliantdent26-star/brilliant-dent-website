@@ -875,6 +875,31 @@ function drawPassword() {
   });
   panelEl().replaceChildren(form);
 }
+function drawQr() {
+  const root = panelEl();
+  const sheet = document.createElement('div');
+  sheet.className = 'qr-sheet';
+  const title = document.createElement('h2');
+  title.textContent = 'Kodi QR';
+  const note = document.createElement('p');
+  note.className = 'muted no-print';
+  note.textContent = 'Skanimi hap briliantdent.com. Printoje dhe vende në klinikë.';
+  const image = document.createElement('img');
+  image.src = '/qr.svg';
+  image.alt = 'Kodi QR për briliantdent.com';
+  image.width = 280;
+  image.height = 280;
+  const url = document.createElement('p');
+  url.className = 'qr-url';
+  url.textContent = 'briliantdent.com';
+  const print = document.createElement('button');
+  print.type = 'button';
+  print.className = 'btn btn-navy no-print';
+  print.textContent = 'Printo';
+  print.addEventListener('click', () => window.print());
+  sheet.append(title, note, image, url, print);
+  root.replaceChildren(sheet);
+}
 function draw() {
   if (panel === 'staff') drawStaff();
   else if (panel === 'hero') drawHero();
@@ -883,6 +908,7 @@ function draw() {
   else if (panel === 'contact') drawContact();
   else if (panel === 'appointments') drawAppointments();
   else if (panel === 'testimonials') drawTestimonials();
+  else if (panel === 'qr') drawQr();
   else drawPassword();
   document.querySelectorAll('.side button[data-panel]').forEach((button) => {
     button.setAttribute('aria-pressed', button.dataset.panel === panel ? 'true' : 'false');
